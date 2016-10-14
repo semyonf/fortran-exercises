@@ -3,28 +3,66 @@
 
 program ex4
     implicit none
-    real, dimension(25) :: X
+    integer, dimension(25) :: X
     integer, dimension(25) :: negativeIndexes
-    integer :: i, k = 1
+    integer :: i, k = 0
 
     X = (/1, 2, 3, 4, -5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 /)
 
     write(*,*) '--X--'
+    call outputMatrix(X, size(X))
 
-    do i = 1, 25
-        write(*,*) X(i)
+    do i = 1, size(X)
         if (X(i) < 0) then
-            negativeIndexes(k) = i
             k = k + 1
+            negativeIndexes(k) = i
         endif
     enddo
 
 
-    if (k /= 1) then
+    if (k /= 0) then
         write(*,*) '--negative indexes found--'
-        do i = 1, k - 1
-            write(*,*) negativeIndexes(i)
-        enddo
+        call outputMatrix(negativeIndexes, k)
     endif
 
 end program ex4
+
+subroutine outputMatrix(matrix, size)
+    implicit none
+
+    integer :: i, size
+    integer, dimension(size) :: matrix
+    character(10) :: convertedInt = ''
+    character(1000) :: line = ''
+
+    do i = 1, size
+        write(convertedInt, '(I5)') matrix(i)
+        write(line, *) trim(line)//trim(convertedInt)
+    enddo
+
+    write(*,*) trim(line)
+
+    line = ''
+
+end subroutine outputMatrix
+
+subroutine outputMatrix2D(matrix, X, Y)
+    implicit none
+
+    integer :: X, Y, i, j
+    integer, dimension(X, Y) :: matrix
+    character(10) :: convertedInt = ''
+    character(1000) :: line = ''
+
+    do j = 1, Y
+        do i = 1, X
+            write(convertedInt, '(I5)') matrix(i,j)
+            write(line, *) trim(line)//trim(convertedInt)
+        enddo
+        write(*,'(a20)') trim(line)
+        line = ''
+    enddo
+
+    line = ''
+
+end subroutine outputMatrix2D
