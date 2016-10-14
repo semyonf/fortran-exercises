@@ -38,7 +38,7 @@ subroutine outputMatrix2D(matrix, X, Y)
             write(convertedInt, '(I5)') matrix(i,j)
             write(line, *) trim(line)//trim(convertedInt)
         enddo
-        write(*,'(a20)') trim(line)
+        write(*, *) trim(line)
         line = ''
     enddo
 
