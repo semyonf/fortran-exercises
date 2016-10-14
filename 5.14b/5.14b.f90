@@ -1,4 +1,4 @@
-! 4.14б в учебнике
+! 5.14б в учебнике
 ! Найти отрицательные в массиве
 
 program ex4
@@ -45,24 +45,3 @@ subroutine outputMatrix(matrix, size)
     line = ''
 
 end subroutine outputMatrix
-
-subroutine outputMatrix2D(matrix, X, Y)
-    implicit none
-
-    integer :: X, Y, i, j
-    integer, dimension(X, Y) :: matrix
-    character(10) :: convertedInt = ''
-    character(1000) :: line = ''
-
-    do j = 1, Y
-        do i = 1, X
-            write(convertedInt, '(I5)') matrix(i,j)
-            write(line, *) trim(line)//trim(convertedInt)
-        enddo
-        write(*,'(a20)') trim(line)
-        line = ''
-    enddo
-
-    line = ''
-
-end subroutine outputMatrix2D
