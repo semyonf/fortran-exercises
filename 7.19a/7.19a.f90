@@ -6,7 +6,7 @@ program ex5
     integer, dimension(5, 5) :: B
     integer :: i, j, positiveElements = 0
 
-    B = reshape((/ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25/), shape(B))
+    B = reshape((/ 1, 2, 3, 4, 5, 6, 7, 8, -9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25/), shape(B))
 
     write(*,*) '--B--'
 
@@ -17,7 +17,6 @@ program ex5
                 positiveElements = positiveElements + 1
             endif
         enddo
-        write(*,*)
     enddo
 
     call outputMatrix2D(B, 5, 5)
