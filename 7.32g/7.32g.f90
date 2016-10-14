@@ -7,47 +7,32 @@
 ! usually referred to as "selection" method.
 ! --------------------------------------------------------------------
 
-PROGRAM  Sorting
-   IMPLICIT NONE
-   INTEGER, DIMENSION(2, 2) :: B
-   ! INTEGER, DIMENSION(2)    :: line
-   INTEGER, PARAMETER       :: MAX_SIZE = 100
-   INTEGER                  :: i = 1, j
-   character(5)            :: temp = ' s'
-   character(500)            :: line = ''
+program sorting
+    implicit none
+    integer, dimension(2, 2) :: b
+    integer, dimension(2) :: linen
+    integer                  :: j = 1, i = 1
 
-   B = reshape((/ 3, -2, 1, 4 /), shape(B))
+    b = reshape((/ 3, -2, 1, 4 /), shape(b))
 
-   ! write(temp, *) 'test'
-   do i = 1, 5
-       write(line, *) trim(line) // '12'
-   enddo
+    write(*,*) 'Original matrix'
+    call outputMatrix2D(b, 2, 2)
 
-   write(*,*) line
+    do j = 1, 2
+        do i = 1, 2
+            linen(i) = b(i,j)
+        enddo
+         
+        call  sort(linen, 2)
+        do i = 1, 2
+            b(i,j) = linen(i)
+        enddo
+    enddo
 
-   ! do j = 1, 2
-   !     do i = 1, 2
-   !         write (temp, *) B(i,j) ! converting integer to string using a 'internal file'
-   !         line = line // temp
-   !     enddo
-   !     write(*,*) line
-       
-   ! enddo
+    write(*,*) 'Sorted matrix'
+    call outputMatrix2D(b, 2, 2)
 
-   ! do j = 1, 2
-   !     do i = 1, 2
-   !         line(i) = B(i,j)
-   !     enddo
-       
-   !     CALL  Sort(line, 2)
-   !     do i = 1, 2
-   !         B(i,j) = line(i)
-   !     enddo
-   ! enddo
-
-   ! WRITE(*,*)
-
-CONTAINS
+contains
 
 ! --------------------------------------------------------------------
 ! INTEGER FUNCTION  FindMinimum():
@@ -55,39 +40,39 @@ CONTAINS
 ! between Start and End.
 ! --------------------------------------------------------------------
 
-   INTEGER FUNCTION  FindMinimum(x, Start, End)
-      IMPLICIT  NONE
-      INTEGER, DIMENSION(1:), INTENT(IN) :: x
-      INTEGER, INTENT(IN)                :: Start, End
-      INTEGER                            :: Minimum
-      INTEGER                            :: Location
-      INTEGER                            :: i
+    integer function  findminimum(x, start, end)
+        implicit  none
+        integer, dimension(1:), intent(in) :: x
+        integer, intent(in)                :: start, end
+        integer                            :: minimum
+        integer                            :: location
+        integer                            :: i
 
-      Minimum  = x(Start)        ! assume the first is the min
-      Location = Start            ! record its position
-      DO i = Start+1, End        ! start with next elements
-         IF (ABS(x(i)) < ABS(Minimum)) THEN    !   if x(i) less than the min?
-            Minimum  = x(i)        !      Yes, a new minimum found
-            Location = i                !      record its position
-         END IF
-      END DO
-      FindMinimum = Location            ! return the position
-   END FUNCTION  FindMinimum
+        minimum  = x(start)        ! assume the first is the min
+        location = start            ! record its position
+        do i = start+1, end        ! start with next elements
+            if (abs(x(i)) < abs(minimum)) then    !   if x(i) less than the min?
+                minimum  = x(i)        !      yes, a new minimum found
+                location = i                !      record its position
+            end if
+        end do
+        findminimum = location            ! return the position
+    end function findminimum
 
 ! --------------------------------------------------------------------
 ! SUBROUTINE  Swap():
 !    This subroutine swaps the values of its two formal arguments.
 ! --------------------------------------------------------------------
 
-   SUBROUTINE  Swap(a, b)
-      IMPLICIT  NONE
-      INTEGER, INTENT(INOUT) :: a, b
-      INTEGER                :: Temp
+    subroutine swap(a, b)
+        implicit  none
+        integer, intent(inout) :: a, b
+        integer                :: temp
 
-      Temp = a
-      a    = b
-      b    = Temp
-   END SUBROUTINE  Swap
+        temp = a
+        a    = b
+        b    = temp
+    end subroutine swap
 
 ! --------------------------------------------------------------------
 ! SUBROUTINE  Sort():
@@ -95,17 +80,39 @@ CONTAINS
 ! order.
 ! --------------------------------------------------------------------
 
-   SUBROUTINE  Sort(x, Size)
-      IMPLICIT  NONE
-      INTEGER, DIMENSION(1:), INTENT(INOUT) :: x
-      INTEGER, INTENT(IN)                   :: Size
-      INTEGER                               :: i
-      INTEGER                               :: Location
+    subroutine sort(x, size)
+        implicit  none
+        integer, dimension(1:), intent(inout) :: x
+        integer, intent(in)                   :: size
+        integer                               :: i
+        integer                               :: location
 
-      DO i = 1, Size-1            ! except for the last
-         Location = FindMinimum(x, i, Size)    ! find min from this to last
-         CALL  Swap(x(i), x(Location))    ! swap this and the minimum
-      END DO
-   END SUBROUTINE  Sort
+        do i = 1, size-1            ! except for the last
+            location = findminimum(x, i, size)    ! find min from this to last
+            call  swap(x(i), x(location))    ! swap this and the minimum
+        end do
+    end subroutine  sort
 
-END PROGRAM  Sorting
+end program sorting
+
+
+subroutine outputMatrix2D(matrix, X, Y)
+    implicit none
+
+    integer :: X, Y, i, j
+    integer, dimension(X, Y) :: matrix
+    character(10) :: convertedInt = ''
+    character(1000) :: line = ''
+
+    do j = 1, Y
+        do i = 1, X
+            write(convertedInt, '(I5)') matrix(i,j)
+            write(line, *) trim(line)//trim(convertedInt)
+        enddo
+        write(*, *) trim(line)
+        line = ''
+    enddo
+
+    line = ''
+
+end subroutine outputMatrix2D
