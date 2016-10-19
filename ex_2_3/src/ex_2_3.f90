@@ -14,7 +14,7 @@ program ex_2_3
 
         open (file=input_file, encoding=E_, newunit=In)
             do i = 1, quantity
-                read(In,'(4f5.2)') value
+                read(In,'(f5.2)') value
                 if (value > 0) then
                     values(i) = .TRUE.
                 endif

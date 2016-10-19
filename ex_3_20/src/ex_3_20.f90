@@ -5,11 +5,16 @@ program ex_3_20
     integer, parameter      :: arrayX = 3, arrayY = 2
     integer                 :: A(arrayX, arrayY)
     integer                 :: B(arrayX * arrayY), C(arrayX * arrayY)
-    integer                 :: i, j, Out = 0
+    integer                 :: i, j, Out = 0, In = 0
     character(*), parameter :: output_file = "output.txt", &
+                               input_file = "../data/input.txt", &
                                E_ = "UTF-8"
 
-    A = reshape((/ 1, 2, 3, 4, 5, 6 /), shape(A))
+    open (file=input_file, encoding=E_, newunit=In)
+        do i = 1, arrayY
+            read(In,"(10g3.5)") (A(j, i), j = 1, arrayX)
+        enddo
+    close (In)
 
     B = reshape(A, shape(B))
     C = reshape(transpose(A), shape(C))
