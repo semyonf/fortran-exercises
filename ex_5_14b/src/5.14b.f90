@@ -3,12 +3,15 @@
 
 program ex_5_14b
     implicit none
-    integer, parameter     :: arrayLength = 5
-    integer                :: X(arrayLength), i = 0, Out = 0
+    integer, parameter      :: arrayLength = 5
+    integer                 :: X(arrayLength), i = 0, Out = 0, In = 0
     character(*), parameter :: output_file = "output.txt", &
-                               E_ = "UTF-8"
+                               input_file  = "../data/input.txt", &
+                                        E_ = "UTF-8"
 
-    X = (/1, 2, 3, 4, -5/)
+    open (file=input_file, encoding=E_, newunit=In)
+        read(In,"(10g3.5)") (X(i), i = 1, arrayLength)
+    close (In)
 
     open (file=output_file, encoding=E_, newunit=Out)
         write(*,*) 'X'
