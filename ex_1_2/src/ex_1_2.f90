@@ -6,7 +6,7 @@ program ex_1_2
     character(*), parameter :: input_file = "../data/input.txt", &
                                output_file = "output.txt", &
                                E_ = "UTF-8"
-    integer                 :: Out = 0, In = 0, i = 0
+    integer                 :: Out = 0, In = 0, i
     real                    :: vals(6), xs(6), x
 
     open (file=input_file, encoding=E_, newunit=In)
@@ -14,9 +14,9 @@ program ex_1_2
         read(In,'(f7.2 )') x
     close (In)
 
-    do i = 0, 6
-        xs(6 - i) = x ** i
-    enddo
+    forall (i=0:6)
+        xs(6-i) = x ** i
+    end forall
 
     open (file=output_file, encoding=E_, newunit=Out)
         write(Out,*) 'Result = ', dot_product(vals, xs)
