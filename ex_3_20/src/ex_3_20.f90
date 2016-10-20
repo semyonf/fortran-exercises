@@ -10,6 +10,9 @@ program ex_3_20
                                input_file = "../data/input.txt", &
                                E_ = "UTF-8"
 
+    23 format(2(/,3i3))
+    6 format(6i3)
+
     open (file=input_file, encoding=E_, newunit=In)
         do i = 1, arrayY
             read(In,"(10g3.5)") (A(j, i), j = 1, arrayX)
@@ -22,15 +25,13 @@ program ex_3_20
     open (file=output_file, encoding=E_, newunit=Out)
         write(Out,*) 'A'
         write(Out,*)
-        do i = 1, arrayX
-                write(Out,"(10g3.5)") ( A(i,j), j=1, arrayY)
-        enddo
+        write(Out, 23) A
         write(Out,*) 'B'
         write(Out,*)
-        write(Out,"(10g3.5)") ( B(i), i=1, arrayY*arrayX)
+        write(Out, 6) B
         write(Out,*) 'C'
         write(Out,*)
-        write(Out,"(10g3.5)") ( C(i), i=1, arrayY*arrayX)
+        write(Out, 6) C
     close (Out)
 
 end program ex_3_20

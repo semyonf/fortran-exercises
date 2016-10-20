@@ -3,10 +3,11 @@
 program ex_2_3
     implicit none
 
-        integer(1), parameter :: quantity = 4
-        integer(1)            :: i
-        logical               :: values(quantity)
-        real(4)               :: value
+        integer, parameter      :: R_ = 4
+        integer(1), parameter   :: quantity = 4
+        integer(1)              :: i
+        logical                 :: values(quantity)
+        real(R_)                :: value
         character(*), parameter :: input_file = "../data/input.txt", &
                                    output_file = "output.txt", &
                                    E_ = "UTF-8"
