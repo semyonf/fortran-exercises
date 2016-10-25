@@ -11,8 +11,8 @@ program ex_1_2
     real(R_)                :: vals(L_), xs(L_), x
 
     open (file=input_file, encoding=E_, newunit=In)
-        read(In,'(6f5.2 )') vals
-        read(In,'(f7.2 )') x
+        read(In,'(6f5.2)') vals
+        read(In,'(f5.2 )') x
     close (In)
 
     forall (i=0:L_)
