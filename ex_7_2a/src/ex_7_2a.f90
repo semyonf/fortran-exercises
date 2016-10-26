@@ -37,4 +37,5 @@ program ex_7_2a
     open (file=output_file, encoding=E_, newunit=Out)
         write(Out, '(I3)') Res
     close (Out)
+    
 end program ex_7_2a
