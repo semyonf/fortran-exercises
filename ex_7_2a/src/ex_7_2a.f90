@@ -3,7 +3,7 @@
 program ex_7_2a
     implicit none
 
-    integer                 :: Out = 0, In = 0, Arr(75), Res(75)
+    integer                 :: Out = 0, In = 0, Arr(75), Res(75), i = 0, j = 0, t = 0
     integer, allocatable    :: Neg(:), Pos(:)
     logical                 :: mask(75)
     character(*), parameter :: output_file = "output.txt", &
@@ -20,6 +20,16 @@ program ex_7_2a
     
     Neg = pack(Arr, mask)
     Pos = pack(Arr, .NOT. mask)
+
+    do i = size(Neg)-1, 1, -1
+        do j = 1, i
+            if (Neg(j).gt.Neg(j+1)) then
+                t=Neg(j)
+                Neg(j)=Neg(j+1)
+                Neg(j+1)=t
+            endif
+        enddo
+    enddo
 
     Res(1:) = Neg
     Res(size(Neg) + 1:) = Pos
