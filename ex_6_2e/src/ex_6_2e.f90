@@ -9,7 +9,7 @@ program ex_6_2e
                                input_file = "../data/input.txt", &
                                E_ = "UTF-8"
     real(R_)                :: x = 0, sum = 0, current = 0, a = 0
-    integer                 :: In = 0, Out = 0, i = 0
+    integer                 :: In = 0, Out = 0, i = 0, factI = 1, k =0
 
     open (file=input_file, encoding=E_, newunit=In)
         read(In,'(1f5.2)') a
@@ -17,7 +17,12 @@ program ex_6_2e
     close (In)
 
     do
-        current = (x * log(a)) ** i / fac(i)
+        factI = 1
+        do k = 1, i
+            factI = factI * k
+        enddo
+
+        current = (x * log(a)) ** i / factI
         sum = sum + current
         ! write(*,*) 'current = ', current, 'sum = ', sum
         if ((current / sum) .LT. RELERR) then
@@ -29,21 +34,5 @@ program ex_6_2e
     open (file=output_file, encoding=E_, newunit=Out)
         write(Out, *) sum
     close (Out)
-
-contains
-
-pure integer function fac(number)
-    implicit none
-
-    integer, intent(in) :: number
-    integer             :: n, i
-
-    n = 1
-    do i = 1, number
-        n = n * i
-    enddo
-    fac = n
-
-end function fac
 
 end program ex_6_2e
