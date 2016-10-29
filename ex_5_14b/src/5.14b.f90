@@ -3,22 +3,29 @@
 
 program ex_5_14b
     implicit none
-    integer, parameter      :: arrayLength = 5
-    integer                 :: X(arrayLength), i = 0, Out = 0, In = 0
+    integer                 :: arrayLength, Out = 0, In = 0
+    integer, allocatable    :: X(:), NegativeIndexes(:)
     character(*), parameter :: output_file = "output.txt", &
                                input_file  = "../data/input.txt", &
                                         E_ = "UTF-8"
 
     open (file=input_file, encoding=E_, newunit=In)
-        read(In,"(10g3.5)") (X(i), i = 1, arrayLength)
+        read(In, '(I2)') arrayLength
+
+        allocate(X(arrayLength))
+        allocate(NegativeIndexes(arrayLength))
+
+        read(In,'(I3)') X(:)
     close (In)
+
+    NegativeIndexes = pack(X, X < 0)
 
     open (file=output_file, encoding=E_, newunit=Out)
         write(*,*) 'X'
-        write(*,"(10g3.5)") (X(i), i = 1, arrayLength)
+        write(*,*) X
 
         write(*,*) 'Negative'
-        write(*,*) pack(X, X < 0)
+        write(*,*) NegativeIndexes
     close (Out)
 
 end program ex_5_14b
