@@ -3,41 +3,48 @@
 
 program ex_7_32g
     implicit none
+    integer, allocatable    :: input(:), B(:,:), line(:)
+    integer                 :: In, Out, x, y, i, t, j
 
-    integer                 :: B(4,5), i, j, k, In, Out, line(4), t
     character(*), parameter :: output_file = "output.txt", &
                                input_file = "../data/input.txt", &
                                E_ = "UTF-8"
-!no labels!
+
     open (file=input_file, encoding=E_, newunit=In)
-        do i = 1, 5
-            read(In,"(4i3)") B(:, i)
-        enddo
+            read(In,'(I3)') x
+            read(In,'(I3)') y
+
+            allocate(input(x * y))
+            allocate(B(y, x))
+            allocate(line(x))
+
+            read(In,'(I3)') input(:)
     close (In)
 
-    B = reshape((B), shape(B))
+    B = reshape(input, shape(B))
 
-    do k = 1, 5
-        line = B(:, k)
-
-        do i = size(line)-1, 1, -1
-            do j = 1, i
-                if (abs(line(j)) .gt. abs(line(j+1))) then
-                    t=line(j)
-                    line(j)=line(j+1)
-                    line(j+1)=t
-                endif
-            enddo
+    write(*, *) 'Input'
+    do i = 1, y
+            write(Out, *) B(i,:)
         enddo
 
-        ! write(*, *) line
-        B(:, k) = line
+    do i = 1, y
+        line = B(i,:)
+        do j = 1, x-1
+            if (abs(line(j)) > abs(line(j+1))) then
+                t = line(j)
+                line(j)=line(j+1)
+                line(j+1)=t
+            endif
+        enddo
+        B(i,:) = line
     enddo
 
-
     open (file=output_file, encoding=E_, newunit=Out)
-        20 format(5(/,4i3))
-        write(Out, 20) B
+        write(Out, *) 'Output'
+        do i = 1, y
+            write(Out, *) B(i,:)
+        enddo
     close (Out)
 
 end program ex_7_32g
