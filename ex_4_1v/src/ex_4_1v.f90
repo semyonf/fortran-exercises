@@ -3,27 +3,33 @@
 program ex_4_1v
     implicit none
 
-    integer, parameter      :: total = 1000
-    real                    :: x = .01254, delta = .0002, f
-    real                    :: arNumbers(total)
-    character(*), parameter :: output_file = "output.txt", &
+
+    integer, parameter      :: R_ = 4
+    character(*), parameter :: input_file = "../data/input.txt", &
+                               output_file = "output.txt", &
                                E_ = "UTF-8"
-    integer                 :: Out = 0, i = 0
 
-    do i = 1, total
-        arNumbers(i) = x
-        x = x + delta
-    enddo
+    real(R_)                :: min, max, delta
+    real(R_), allocatable   :: ArrX(:), ArrF(:)
 
-    do i = 1, total
-        f = arNumbers(i)
-        arNumbers(i) = f**2 * TAN(f) + (SIN(f)/f)
-    enddo
+    integer                 :: Out = 0, In = 0, i = 0, N = 0
+
+    open (file=input_file, encoding=E_, newunit=In)
+        read(In, '(f7.5)') min
+        read(In, '(f7.5)') max
+        read(In, '(f7.5)') delta
+    close (In)
+
+    N = Int((max-min)/delta)
+
+    allocate(ArrX(N), ArrF(N))
+
+    forall (i=1:N)
+        ArrF(i) = (ArrX(i) ** 2) * (tan(ArrX(i))) + (sin(ArrX(i))) / (ArrX(i))
+    end forall
 
     open (file=output_file, encoding=E_, newunit=Out)
-        do i = 1, total
-            write(Out,'(f5.3)') arNumbers(i)
-        enddo
+        write(Out,'(f7.5)') ArrF(:)
     close (Out)
 
 end program ex_4_1v
