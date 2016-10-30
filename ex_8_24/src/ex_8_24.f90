@@ -1,5 +1,4 @@
-! 7.32g в учебнике
-! Упорядочить элементы в СТРОКАХ матрицы B(10,15) так, чтобы |B(i,j)| <= |B(i,(j+1))|
+! 8.24 в учебнике
 
 program ex_8_24
     implicit none
@@ -8,7 +7,7 @@ program ex_8_24
     character(*), parameter :: output_file = "output.txt", &
                                input_file = "../data/input.txt", &
                                E_ = "UTF-8"
-                               
+
 contains
 
 pure real function q(x)

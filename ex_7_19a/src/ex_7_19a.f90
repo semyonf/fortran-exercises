@@ -17,7 +17,7 @@ program ex_7_19a
             read(In,"(10g3.5)") (B(j, i), j = 1, x)
         enddo
     close (In)
-
+!read with one operator
     mask = B .GE. 0
     positiveElements = count(mask)
 

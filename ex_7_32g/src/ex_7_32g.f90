@@ -8,7 +8,7 @@ program ex_7_32g
     character(*), parameter :: output_file = "output.txt", &
                                input_file = "../data/input.txt", &
                                E_ = "UTF-8"
-
+!no labels!
     open (file=input_file, encoding=E_, newunit=In)
         do i = 1, 5
             read(In,"(4i3)") B(:, i)
