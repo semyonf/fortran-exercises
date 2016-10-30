@@ -3,36 +3,40 @@
 program ex_7_2a
     implicit none
 
-    integer                 :: Out = 0, In = 0, Arr(75), Res(75), i = 0, j = 0, t = 0
-    integer, allocatable    :: Neg(:), Pos(:)
-    logical                 :: mask(75)
+    integer                 :: size = 0, amountOfNegatives = 0, Out = 0, In = 0, i = 0, j = 0, t = 0
+    integer, allocatable    :: Neg(:), Pos(:), Arr(:), Res(:)
+    logical, allocatable    :: mask(:)
     character(*), parameter :: output_file = "output.txt", &
                                input_file = "../data/input.txt", &
                                E_ = "UTF-8"
 
     open (file=input_file, encoding=E_, newunit=In)
-        read(In, '(75I3)') Arr
+        read(In, '(I2)') size
+        allocate(Arr(size))
+        allocate(Res(size))
+        allocate(mask(size))
+        read(In, '(I3)') Arr(:)
     close (In)
 
-    mask = Arr .LE. 0
-    allocate(Neg(count(mask)))
-    allocate(Pos(size(Arr) - count(mask)))
-    
+    mask = Arr <= 0
+    amountOfNegatives = count(mask)
+    allocate(Neg(amountOfNegatives))
+    allocate(Pos(size - amountOfNegatives))
+
     Neg = pack(Arr, mask)
     Pos = pack(Arr, .NOT. mask)
 
-    do i = size(Neg)-1, 1, -1
+    do i = 0, amountOfNegatives
         do j = 1, i
-            if (Neg(j).gt.Neg(j+1)) then
-                t=Neg(j)
-                Neg(j)=Neg(j+1)
-                Neg(j+1)=t
+            if (Neg(j) > Neg(j+1)) then
+                t = Neg(j)
+                Neg(j) = Neg(j+1)
+                Neg(j+1) = t
             endif
         enddo
     enddo
 
-    Res(1:) = Neg
-    Res(size(Neg) + 1:) = Pos
+    Res = [pack(Neg, .TRUE.), pack(Pos, .TRUE.)]
 
     open (file=output_file, encoding=E_, newunit=Out)
         write(Out, '(I3)') Res
