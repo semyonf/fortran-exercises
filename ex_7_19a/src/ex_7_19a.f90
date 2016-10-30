@@ -4,29 +4,30 @@
 program ex_7_19a
     implicit none
 
-    integer, parameter      :: x = 4, y = 5
-    integer                 :: B(x, y)
-    logical                 :: mask(x, y)
-    integer                 :: i, j, positiveElements = 0, Out = 0, In = 0
+    integer                 :: x, y, Positives = 0, Out = 0, In = 0
+    integer, allocatable    :: B(:,:), input(:)
+    logical, allocatable    :: mask(:,:)
     character(*), parameter :: output_file = "output.txt", &
                                input_file = "../data/input.txt", &
                                E_ = "UTF-8"
 
     open (file=input_file, encoding=E_, newunit=In)
-        do i = 1, y
-            read(In,"(10g3.5)") (B(j, i), j = 1, x)
-        enddo
+        read(In,'(I3)') x
+        read(In,'(I3)') y
+
+        allocate(input(x * y))
+        allocate(mask(y,x))
+        allocate(B(y,x))
+
+        read(In,'(I3)') input(:)
     close (In)
-!read with one operator
-    mask = B .GE. 0
-    positiveElements = count(mask)
+
+    B = reshape(input, shape=[y, x])
+
+    mask = B >= 0
+    Positives = count(mask)
 
     open (file=output_file, encoding=E_, newunit=Out)
-        write(Out,*) 'B'
-        do i = 1, y
-            write(Out,"(10g3.5)") (B(j, i), j = 1, x)
-        enddo
-        write(Out,*)
-        write(Out,*) 'Positive elements:', positiveElements
+        write(Out,*) 'Positive elements:', Positives
     close (Out)
 end program ex_7_19a
