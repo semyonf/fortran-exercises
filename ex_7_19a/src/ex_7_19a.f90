@@ -1,7 +1,6 @@
 ! 7.19a в учебнике
 ! количесвто элементов матрицы B, которые положительны
-! Корректно читать двумерный массив по строкам.
-! "Count. Составить маску. Упаковать массив индексов (см. раздаточные 7.х)."
+! вывести индексы
 
 program ex_7_19a
     implicit none
@@ -10,8 +9,6 @@ program ex_7_19a
     integer                 :: x = 0, y = 0, In = 1, Out = 0, i = 0, j = 0, positives = 0
     character(*), parameter :: output_file = "output.txt", &
                                input_file = "../data/input.txt"
-    character(50)           :: fmt
-    character(50)           :: temp
 
     open (file=input_file, newunit=In)
         read(In, *) x, y
@@ -34,20 +31,10 @@ program ex_7_19a
 
     NegativeIndexes = pack(Indexes, .NOT. mask)
 
-    ! Array looks cleaner this way
-    write(temp, *) x
-    fmt = '(' // trim(temp) // 'I4)'
-
     open (file=output_file, newunit=Out)
-        write(Out, *) 'Array B'
-        write(Out, fmt) (B(:,i), i = 1, y)
-        write(Out, *)
-        write(Out, *) 'Array Indexes'
-        write(Out, fmt) (Indexes(:,i), i = 1, y)
-        write(Out, *)
-        write(Out, *) NegativeIndexes, ' - negative indexes'
-        write(Out, *)
-        write(Out, *) positives, ' positive elements within array found'
+        write(Out, *) positives, 'positive elements within array found'
+        write(Out, *) 'Negative indexes:'
+        write(Out, *) NegativeIndexes
     close (In)
 
 end program ex_7_19a
