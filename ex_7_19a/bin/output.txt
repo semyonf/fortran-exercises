@@ -1,0 +1,3 @@
+          18 positive elements found within the array
+ Negative indexes:
+          33          34

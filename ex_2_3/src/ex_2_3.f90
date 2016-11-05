@@ -3,29 +3,24 @@
 program ex_2_3
     implicit none
 
-        integer                 :: Out = 0, In = 0, result = 0, quantity = 0
+        integer                 :: Out = 0, In = 0, positives = 0, size = 0
         integer, parameter      :: R_ = 4
         logical, allocatable    :: mask(:)
         real(R_), allocatable   :: values(:)
         character(*), parameter :: input_file = "../data/input.txt", &
-                                   output_file = "output.txt", &
-                                   E_ = "UTF-8"
+                                   output_file = "output.txt"
 
-        open (file=input_file, encoding=E_, newunit=In)
-            read(In,'(I2)') quantity
-
-            allocate(mask(quantity))
-            allocate(values(quantity))
-
-            read(In, '(f5.2)') values(:)
-            write(*,*) values
+        open (file=input_file, newunit=In)
+            read(In, *) size
+            allocate(values(size))
+            read(In, *) values(:)
         close (In)
 
         mask = values >= 0
-        result = count(mask);
+        positives = count(mask)
 
-        open (file=output_file, encoding=E_, newunit=Out)
-            write(Out,'(I3)') result
+        open (file=output_file, newunit=Out)
+            write(Out, *) positives
         close (Out)
 
 end program ex_2_3

@@ -6,7 +6,7 @@ program ex_6_2e
     integer, parameter      :: R_ = 4
     character(*), parameter :: output_file = "output.txt", &
                                input_file = "../data/input.txt"
-    real(R_)                :: x = 0, a = 0, sum = 0, current = 0, new = 0
+    real(R_)                :: x = 0, a = 0, currentElement = 0, newElement = 0, currentSum = 0, newSum = 0
     integer                 :: In = 0, Out = 0, i = 0
 
     open (file=input_file, newunit=In)
@@ -14,19 +14,22 @@ program ex_6_2e
         read(In,'(f5.2)') x
     close (In)
 
-    current = 1
+    currentElement = 1
 
     do
         i = i + 1
-        sum = sum + current
-        new = current * x * log(a) / i
-        if (new == current) &
+        currentSum = newSum
+        newSum = currentSum + currentElement
+
+        newElement = currentElement * x * log(a) / i
+        currentElement = newElement
+
+        if (currentSum == newSum) &
             exit
-        current = new
     end do
 
     open (file=output_file, newunit=Out)
-        write(Out, *) sum, ' ~ ' ,a**x
+        write(Out, *) currentSum, ' ~ ' , a**x
     close (Out)
 
 end program ex_6_2e

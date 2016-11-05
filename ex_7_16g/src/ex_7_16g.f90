@@ -3,28 +3,25 @@
 program ex_7_16g
     implicit none
 
-    integer                 :: x, y, Out = 0, In = 0
-    integer, allocatable    :: input(:), B(:,:)
+    integer                 :: x, y, Out = 0, In = 0, i = 0, maxCol = 0, min = 0
+    integer, allocatable    :: B(:,:), colSum(:)
     character(*), parameter :: output_file = "output.txt", &
-                               input_file = "../data/input.txt", &
-                               E_ = "UTF-8"
+                               input_file = "../data/input.txt"
 
-    open (file=input_file, encoding=E_, newunit=In)
-        read(In, '(I2)') x
-        read(In, '(I2)') y
-        allocate(input(x * y))
-        read(In, '(I3)') input(:)
+    open (file=input_file, newunit=In)
+        read(In, *) x, y
+        allocate(B(x,y))
+        read(In, *) (B(:,i), i = 1, y)
     close (In)
 
-    allocate(B(x,y))
+    colSum = [([sum(B(i,:))], i = 1, y)]
+    maxCol = maxloc(colSum, 1)
+    min = minval(B(maxCol,:))
 
-    B = reshape(input, [x, y])
+    open (file=output_file, newunit=Out)
+        write(Out, *) min
 
-    open (file=output_file, encoding=E_, newunit=Out)
-        write(Out, *) B(1,:)
-        write(Out, *) B(2,:)
-        write(Out, *) B(3,:)
-        write(Out, *) B(4,:)
-        write(Out, *) B(5,:)
+        ! Однострочная версия
+        ! write(*,*) minval(B(maxloc([([sum(B(i,:))], i = 1, y)], 1),:))
     close (Out)
 end program ex_7_16g

@@ -1,6 +1,8 @@
 ! 7.19a в учебнике
 ! количесвто элементов матрицы B, которые положительны
-! вывести индексы
+! вывести их индексы
+
+! TODO надо сделать херню для индексов массива
 
 program ex_7_19a
     implicit none
@@ -13,7 +15,7 @@ program ex_7_19a
     open (file=input_file, newunit=In)
         read(In, *) x, y
 
-        allocate(B(x,y), mask(x,y), Indexes(x,y))
+        allocate(B(x,y), Indexes(x,y))
 
         read(In, *) (B(:,i), i = 1, y)
     close (In)
@@ -21,7 +23,7 @@ program ex_7_19a
     mask = B > 0
     positives = count(mask)
 
-    allocate(NegativeIndexes(count(.NOT. mask)))
+    allocate(NegativeIndexes(x*y - positives))
 
     do i = 1, y
         do j = 1,x
@@ -32,7 +34,7 @@ program ex_7_19a
     NegativeIndexes = pack(Indexes, .NOT. mask)
 
     open (file=output_file, newunit=Out)
-        write(Out, *) positives, 'positive elements within array found'
+        write(Out, *) positives, 'positive elements found within the array'
         write(Out, *) 'Negative indexes:'
         write(Out, *) NegativeIndexes
     close (In)
