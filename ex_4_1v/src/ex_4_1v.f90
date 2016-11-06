@@ -3,33 +3,29 @@
 program ex_4_1v
     implicit none
 
-
     integer, parameter      :: R_ = 4
-    character(*), parameter :: input_file = "../data/input.txt", &
-                               output_file = "output.txt", &
-                               E_ = "UTF-8"
-
     real(R_)                :: min, max, delta
-    real(R_), allocatable   :: ArrX(:), ArrF(:)
-
+    real(R_), allocatable   :: X(:), F(:)
     integer                 :: Out = 0, In = 0, i = 0, N = 0
+    character(*), parameter :: input_file = "../data/input.txt", &
+                               output_file = "output.txt"
 
-    open (file=input_file, encoding=E_, newunit=In)
-        read(In, '(f7.5)') min
-        read(In, '(f7.5)') max
-        read(In, '(f7.5)') delta
+    open (file=input_file, newunit=In)
+        read(In, *) min, max, delta
     close (In)
 
-    N = Int((max-min)/delta)
+    N = Int((max - min) / delta + .5) + 1
 
-    allocate(ArrX(N), ArrF(N))
+    allocate(X(N), F(N))
 
-    forall (i=1:N)
-        ArrF(i) = (ArrX(i) ** 2) * (tan(ArrX(i))) + (sin(ArrX(i))) / (ArrX(i))
-    end forall
+    forall (i = 1:N) &
+        X(i) = min + i * delta
 
-    open (file=output_file, encoding=E_, newunit=Out)
-        write(Out,'(f7.5)') ArrF(:)
+    F = (X ** 2) * (tan(X) + (sin(X) / X))
+
+    open (file=output_file, newunit=Out)
+        write (Out, '("  X   |   f")')
+        write (Out, '(f0.4, T7, "| ", f0.4)') (X(i), F(i), i = 1, N)
     close (Out)
 
 end program ex_4_1v
