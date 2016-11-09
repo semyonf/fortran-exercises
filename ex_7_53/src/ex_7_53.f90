@@ -3,9 +3,9 @@
 program ex_7_53
     implicit none
 
-    integer, allocatable    :: Z(:,:), Y(:,:), test(:,:)
-    logical, allocatable    :: Ymask(:,:), Zmask(:,:), Rmask(:,:)
-    integer                 :: In, Out, N_Z, N_Y, i
+    integer, allocatable    :: Z(:,:), Y(:,:), BIG(:,:), SMALL(:,:), test(:,:)
+    logical, allocatable    :: Rmask(:,:)
+    integer                 :: In, Out, N_Z, N_Y, i, b_Size
     character(*), parameter :: output_file = "output.txt", &
                                input_file = "../data/input.txt"
 
@@ -19,33 +19,40 @@ program ex_7_53
         read(In, *) (Y(:,i), i = 1, N_Y)
     close (In)
 
-    allocate(test(maxval([N_Y, N_Z]),maxval([N_Y, N_Z])))
-
-    Ymask = (Y /= 0)
-    Zmask = (Z /= 0)
-
     if (maxval([N_Y, N_Z]) == N_Y) then
-        Rmask = (Zmask .and. Ymask)
+        b_Size = N_Y
+        BIG = Y
+        SMALL = Z
     else
-        Rmask = (Ymask .and. Zmask)
+        b_Size = N_Z
+        BIG = Z
+        SMALL = Y
     endif
 
-    
+    Rmask = (SMALL /= 0 .and. BIG /= 0)
+
+    allocate(test(3,3))
+
+    test = reshape(pack(SMALL, Rmask), [3,3], [0,0,0,0,0,0,0,0,0,0,0,0])
 
     open (file=output_file, newunit=Out)
         write(Out, *) '-y-'
-        write(Out, *) Ymask(:,1)
-        write(Out, *) Ymask(:,2)
-        write(Out, *) Ymask(:,3)
-        write(Out, *) Ymask(:,4)
+        write(Out, *) BIG(:,1)
+        write(Out, *) BIG(:,2)
+        write(Out, *) BIG(:,3)
+        write(Out, *) BIG(:,4)
         write(Out, *) '-z-'
-        write(Out, *) Zmask(:,1)
-        write(Out, *) Zmask(:,2)
-        write(Out, *) Zmask(:,3)
+        write(Out, *) SMALL(:,1)
+        write(Out, *) SMALL(:,2)
+        write(Out, *) SMALL(:,3)
         write(Out, *) '-r-'
         write(Out, *) Rmask(:,1)
         write(Out, *) Rmask(:,2)
         write(Out, *) Rmask(:,3)
+        write(Out, *) '-test-'
+        write(Out, *) test(:,1)
+        write(Out, *) test(:,2)
+        write(Out, *) test(:,3)
         ! write(Out, *) (Z(:,i), i = 1, N_Z)
         ! write(Out, *) (Y(:,i), i = 1, N_Y)
     close (Out)
