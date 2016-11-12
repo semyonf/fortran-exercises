@@ -17,17 +17,17 @@ module environment
 contains
 
    pure function Int_plus_string(int, str) result(res)
-      integer, intent(in)                                            :: int
-      character(*), intent(in)                                       :: str
-      character(len(str)+Max(Floor(Log10(Real(int, real64)))+1, 1))  :: res
+      integer, intent(in)                                         :: int
+      character(*), intent(in)                                    :: str
+      character(len(str)+Max(Floor(Log10(Real(int, I_*2)))+1, 1)) :: res
 
       write (res, '(i0, a)') int, str
    end function Int_plus_string
 
    pure function String_plus_int(str, int) result(res)
-      character(*), intent(in)                               :: str
-      integer, intent(in)                                    :: int
-      character(len(str)+Max(Floor(Log10(Real(int, real64)))+1, 1))  :: res
+      character(*), intent(in)                                    :: str
+      integer, intent(in)                                         :: int
+      character(len(str)+Max(Floor(Log10(Real(int, I_*2)))+1, 1)) :: res
 
       write (res, '(a, i0)') str, int
    end function String_plus_int
@@ -37,16 +37,13 @@ contains
       integer, intent(in)        :: IO
       character(*), intent(in)   :: where
 
-      integer Out
-
-      Out = OUTPUT_UNIT
-      open (Out, encoding=E_)
+      open (ERROR_UNIT, encoding=E_)
       select case(IO)
-         case(0, IOSTAT_END)
+         case(0, IOSTAT_END, IOSTAT_EOR)
          case(1:)
-            write (Out, '(a, i0)') "Error " // where // ": ", IO
+            write (ERROR_UNIT, '(a, i0)') "Error " // where // ": ", IO
          case default
-            write (Out, '(a, i0)') "Undetermined behaviour has been reached while " // where // ": ", IO
+            write (ERROR_UNIT, '(a, i0)') "Undetermined behaviour has been reached while " // where // ": ", IO
       end select
       ! close (Out) ! Если не OUTPUT_UNIT.
    end subroutine Handle_IO_status
