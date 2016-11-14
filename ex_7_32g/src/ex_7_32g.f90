@@ -5,7 +5,7 @@ program ex_7_32g
     implicit none
 
     integer, allocatable    :: B(:,:), AbsLine(:), Order(:)
-    integer                 :: In, Out, x, y, i, j, shiftAmount
+    integer                 :: In, Out, x, y, i, j
 
     character(*), parameter :: output_file = "output.txt", &
                                input_file = "../data/input.txt"
@@ -20,9 +20,8 @@ program ex_7_32g
         AbsLine = abs(B(:,j))
         Order = [(i,i = 1, x)]
         do i = 1, x
-            shiftAmount = minloc(AbsLine(i:), 1) - 1
-            AbsLine(i:)  = cshift(AbsLine(i:), shiftAmount)
-            Order(i:) = cshift(Order(i:), shiftAmount)
+            Order(i:) = cshift(Order(i:), minloc(AbsLine(i:), 1) - 1)
+            AbsLine = AbsLine(order)
         enddo
         B(:,j) = B(order,j)
     end do
