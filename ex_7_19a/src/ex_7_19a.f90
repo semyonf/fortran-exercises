@@ -28,9 +28,7 @@ program ex_7_19a
     open (file=output_file, newunit=Out)
         write(Out, *) pos, 'positive elements found within the array, coordinates:'
         write(Out, *) 'X, Y'
-        do i = 1, pos
-            write(Out, '(I2,A1,I2)') Indexes(Positions(i),1), ',' ,Indexes(Positions(i),2)
-        enddo
+        write(Out, '(I2,A1,I2)') (Indexes(Positions(i),1), ',' ,Indexes(Positions(i),2), i = 1, pos)
     close (In)
 
 end program ex_7_19a
