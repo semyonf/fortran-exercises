@@ -21,7 +21,7 @@ program ex_7_32g
         Order = [(i,i = 1, x)]
         do i = 1, x
             Order(i:) = cshift(Order(i:), minloc(AbsLine(i:), 1) - 1)
-            AbsLine = AbsLine(order)
+            AbsLine = cshift(AbsLine, minloc(AbsLine(i:), 1) - 1)
         enddo
         B(:,j) = B(order,j)
     end do
