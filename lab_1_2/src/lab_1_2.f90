@@ -1,67 +1,78 @@
-program lab_1_1
+program lab_1_2
     use Environment
 
     implicit none
-    integer, parameter                              :: N_RECORDS = 15, L_NAME = 15, L_POSITION = 15
-    logical                                         :: exists
-    integer                                         :: i, j, IO, In, Out, N_unique = 0
-    character(L_NAME, kind=CH_)                     :: names(N_RECORDS), positions(N_RECORDS), uniquePositions(N_RECORDS)
-    character(*), parameter                         :: input_file = "../data/input.txt", &
-                                                       output_file = "output.txt", &
-                                                       listFormat = '(2a)', &
-                                                       resFormat = '(2a,i1)'
+    integer, parameter          :: N_RECORDS = 15, L_NAME = 15, L_POSITION = 15
+    character(kind=CH_)         :: names(N_RECORDS, L_NAME), positions(N_RECORDS, L_POSITION)!, types(N_RECORDS, L_POSITION)
+    integer                     :: In, Out
+    ! logical                     :: repeated(N_RECORDS) = .false.
+    character(*), parameter     :: input_file = "../data/input.txt", &
+                                   output_file = "output.txt"
 
     ! Чтение списка сотрудников
-    open (file=input_file, encoding=E_, newunit=In)
-        read (In, listFormat, iostat=IO) (names(i), positions(i), i = 1, N_RECORDS)
-    close (In)
-
-    ! Обработка статуса чтения.
-    Out = OUTPUT_UNIT
-    open (Out, encoding=E_)
-    select case(io)
-       case(0)
-       case(IOSTAT_END)
-          write (Out, '(a)') "Reached end of file while reading the list."
-       case(1:)
-          write (Out, '(a)') "Error while reading the list: ", io
-       case default
-          write (Out, '(a)') "Undetermined error has occured while reading the list: ", io
-    end select
-
-    ! Обработка списка
-    do i = 1, N_RECORDS
-        exists = .false.
-        do j = 1, i
-            if (positions(i) == uniquePositions(j)) then
-                exists = .true.
-            endif
-        enddo
-        if (.not. exists) then
-            N_unique = N_unique + 1
-            uniquePositions(N_unique) = positions(i)
-        endif
-    enddo
+    call ReadEmployeeList(input_file, names, positions)
 
     ! Вывод списка сотрудников и количества профессий
-    open (file=output_file, encoding=E_, newunit=Out)
-        write (Out, *) 'Список сотрудников:'
-        write (Out, listFormat, iostat=IO) (names(i), positions(i), i = 1, N_RECORDS)
-        write (Out, *) 'Профессии:'
-        write (Out, resFormat, iostat=IO) (uniquePositions(i), ' -> ',count(positions == uniquePositions(i)), i = 1, N_unique)
-    close (Out)
+    call WriteEmployeeList(output_file, names, positions)
 
-    ! Обработка статуса записи.
-    Out = OUTPUT_UNIT
-    open (Out, encoding=E_)
-    select case(io)
-       case(0)
-       case(IOSTAT_END)
-          write (Out, '(a)') "Reached end of file while writing the list."
-       case(1:)
-          write (Out, '(a)') "Error while writing the list: ", io
-       case default
-          write (Out, '(a)') "Undetermined error has occured while writing the list: ", io
-    end select
+    ! ! Поиск повторившихся профессий
+    ! call ProcessPositions(positions, types)
 
-end program lab_1_1
+    ! Вывод профессий и их повторений
+    ! call WritePositionsOccured(output_file, uniquePositions)
+
+contains
+
+    ! ! Подпроцесс для поиска и подсчета повторений профессий
+    ! pure subroutine ProcessPositions(positions, types)
+    !     implicit none
+
+    !     character(kind=CH_) positions(:,:), types(:,:)
+    !     intent(in)  positions
+    !     intent(out) types
+
+    ! end subroutine ProcessPositions
+
+    ! Подпроцесс для чтения списка сотрудников
+    subroutine ReadEmployeeList(input_file, names, positions)
+        implicit none
+
+        character(*) input_file
+        character(kind=CH_) names(:,:), positions(:,:)
+        intent(in)  input_file
+        intent(out) names, positions
+
+        integer :: In, IO, i
+        character(:), allocatable :: format
+
+        format = '(' // L_NAME // 'a1, ' // L_POSITION // 'a1)'
+
+        open (file=input_file, encoding=E_, newunit=In)
+            read(In, format, iostat=IO) (names(i,:), positions(i,:), i = 1, N_RECORDS)
+            call Handle_IO_status(IO, 'ReadEmployeeList')
+        close (In)
+
+    end subroutine ReadEmployeeList
+
+    ! Подпроцесс для записи списка сотрудников
+    subroutine WriteEmployeeList(output_file, names, positions)
+        implicit none
+
+        character(*) output_file
+        character(kind=CH_) names(:,:), positions(:,:)
+        intent(in)  output_file
+        intent(out) names, positions
+
+        integer :: Out, IO, i
+        character(:), allocatable   ::format
+
+        format = '(' // L_NAME // 'a1, ' // L_POSITION // 'a1)'
+
+        open (file=output_file, encoding=E_, newunit=Out)
+            write(Out, format, iostat=IO) (names(i,:), positions(i,:), i = 1, N_RECORDS)
+            call Handle_IO_status(IO, 'WriteEmployeeList')
+        close (Out)
+
+    end subroutine WriteEmployeeList
+
+end program lab_1_2
