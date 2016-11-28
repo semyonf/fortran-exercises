@@ -42,32 +42,32 @@ contains
     end subroutine Create_data_file
 
     ! Чтение списка сотрудников
-    function Read_employee_list(data_file) result(team)
+    function Read_employee_list(data_file) result(employees)
         implicit none
-        type(employee)              team(N_RECORDS)
+        type(employee)              employees(N_RECORDS)
         character(*), intent(in) :: data_file
         integer In, IO, recl
         
         recl = (L_NAME + L_POSITION) * CH_ * N_RECORDS
         open (file=Data_File, form='unformatted', newunit=In, access='direct', recl=recl)
-            read (In, iostat=IO, rec=1) team
+            read (In, iostat=IO, rec=1) employees
             call Handle_IO_status(IO, "reading unformatted class list")
         close (In)
     end function Read_employee_list
  
    ! Вывод списка сотрудников
-    subroutine Output_employee_list(output_file, team, List_name, position)
+    subroutine Output_employee_list(output_file, employees, List_name, position)
         implicit none
-        character(*), intent(in)  :: output_file, list_name, position
-        type(employee), intent(in) :: team(:)
+        character(*), intent(in)   :: output_file, list_name, position
+        type(employee), intent(in) :: employees(:)
   
         integer                   :: Out, IO
         character(:), allocatable :: format
         
         open (file=Output_File, encoding=E_, position=position, newunit=Out)
-            write (out, '(/a)') List_name
+            write (out, '(a)') List_name
             format = '(2a15)'
-            write (Out, format, iostat=IO) team
+            write (Out, format, iostat=IO) employees
             call Handle_IO_status(IO, "writing " // List_name)
         close (Out)
     end subroutine Output_employee_list
@@ -86,8 +86,9 @@ contains
 
         format = '(' // L_POSITION // 'a1, I3)'
 
-        open (file=output_file, encoding=E_, newunit=Out)
-            write(Out, format, iostat=IO) (types(i,:), occurrences(i,1), i = 1, count(occurrences /= 0))
+        open (file=output_file, encoding=E_, position="append", newunit=Out)
+            write(Out, '(/a)') 'Количество профессий:'
+            write(Out, format, iostat=IO) (types(i,:), occurrences(i,1), i = 1, 4)
             call Handle_IO_status(IO, 'WritePositionsOccured')
         close (Out)
 

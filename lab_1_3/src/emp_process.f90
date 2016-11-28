@@ -10,15 +10,19 @@ contains
     pure subroutine ProcessPositions(positions, types, occurrences)
         implicit none
 
-        character(kind=CH_) positions(:,:), types(:,:)
-        integer occurrences(:,:)
-        intent(in)  positions
+        character(kind=CH_) types(:,:), positions(:,:)
+        integer             occurrences(:,:)
+        intent(in) positions
         intent(out) types, occurrences
 
-        integer                          :: N_unique = 0, i = 0, duplicates = 0
+        integer                          :: N_unique, i, duplicates
         character(kind=CH_), allocatable :: newPositions(:,:)
-        logical                          :: repeated(N_RECORDS) = .false.
+        logical                          :: repeated(N_RECORDS)
 
+        N_unique = 0
+        i = 0
+        duplicates = 0
+        repeated(N_RECORDS) = .false.
         newPositions = positions
 
         do while (.not. all(repeated))
