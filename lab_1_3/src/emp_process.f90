@@ -1,8 +1,7 @@
 module Emp_Process
-   ! Модуль с ЧИСТЫМИ процедурами обработки данных
-   use Environment
-   use Emp_IO
-   implicit none
+    use Environment
+    use Emp_IO
+    implicit none
 
 contains
 
@@ -15,32 +14,32 @@ contains
         intent(in) employees
         intent(out) types, occurrences
 
-        integer                     :: N_unique, i, duplicates
-        type(employee), allocatable :: newEmployees(:)
-        logical                     :: repeated(N_RECORDS)
+        integer                     :: N_unique, i, duplicates, records
+        type(employee), allocatable :: filtered(:)
+        logical, allocatable        :: repeated(:)
 
-        N_unique = 0
-        i = 0
+        records = size(employees(:))
+        allocate(repeated(records))
+
+        N_unique = 1
         duplicates = 0
-        repeated(N_RECORDS) = .false.
-
-        newEmployees = employees
+        repeated = .false.
+        filtered = employees
 
         do while (.not. all(repeated))
             N_unique = N_unique + 1
-            types(N_unique)%position = newEmployees(1)%position
+            types(N_unique)%position = filtered(1)%position
             occurrences(N_unique) = count(types(N_unique)%position == employees(:)%position)
             repeated = repeated .or. types(N_unique)%position == employees(:)%position
-            do i = 1, N_RECORDS
+            do i = 1, records
                 if (repeated(i) .eqv. .true.) then
                     duplicates = duplicates + 1
                 else
-                    newEmployees(i - duplicates)%position = employees(i)%position
+                    filtered(i - duplicates)%position = employees(i)%position
                 endif
             enddo
             duplicates = 0
         enddo
-
     end subroutine ProcessPositions
 
 end module Emp_Process
