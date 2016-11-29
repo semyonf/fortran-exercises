@@ -14,6 +14,29 @@ module Emp_IO
 
 contains
 
+    ! Подпроцесс для записи списка профессий
+    subroutine WritePositionsOccured(output_file, types, occurrences)
+        implicit none
+
+        character(*)   output_file
+        type(employee) types(:)
+        integer        occurrences(:)
+        intent(in) output_file, types, occurrences
+
+        integer :: Out, IO, i
+        character(:), allocatable :: format
+        format = '(a,a,i)'
+
+        open (file=output_file, encoding=E_, position="append", newunit=Out)
+            write(Out, '(/a)') 'Количество профессий:'
+            do i = 1, count(occurrences /= 0)
+                write(Out, format, iostat=IO) types(i)%position, ' -> ',occurrences(i)
+            enddo
+            call Handle_IO_status(IO, 'WritePositionsOccured')
+        close (Out)
+
+    end subroutine WritePositionsOccured
+
     ! Создание неформатированного файла данных
     subroutine Create_data_file(input_file, data_file)
         implicit none
@@ -71,27 +94,5 @@ contains
             call Handle_IO_status(IO, "writing " // List_name)
         close (Out)
     end subroutine Output_employee_list
-
-    ! Подпроцесс для записи списка профессий
-    subroutine WritePositionsOccured(output_file, types, occurrences)
-        implicit none
-
-        character(*)        output_file
-        character(kind=CH_) types(:,:)
-        integer             occurrences(:, :)
-        intent(in)  output_file, types, occurrences
-
-        integer :: Out, IO, i
-        character(:), allocatable :: format
-
-        format = '(' // L_POSITION // 'a1, I3)'
-
-        open (file=output_file, encoding=E_, position="append", newunit=Out)
-            write(Out, '(/a)') 'Количество профессий:'
-            write(Out, format, iostat=IO) (types(i,:), occurrences(i,1), i = 1, 4)
-            call Handle_IO_status(IO, 'WritePositionsOccured')
-        close (Out)
-
-    end subroutine WritePositionsOccured
 
 end module Emp_IO
