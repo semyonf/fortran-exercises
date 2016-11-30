@@ -88,7 +88,7 @@ contains
 
         open (file=output_file, encoding=E_, position="append", newunit=Out)
             write(Out, '(/a)') 'Количество профессий:'
-            do i = 1, count(occurrences /= 0) + 1
+            do i = 0, count(occurrences /= 0)
                 write(Out, format, iostat=IO) types(i)%position, ' -> ',occurrences(i)
             enddo
             call Handle_IO_status(IO, 'WritePositionsOccured')

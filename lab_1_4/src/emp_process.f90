@@ -5,41 +5,47 @@ module Emp_Process
 
 contains
 
-! Подпроцесс для поиска и подсчета повторений профессий
-   pure subroutine ProcessPositions(employees, types, occurrences)
+   ! Подпроцесс для поиска и подсчета повторений профессий
+   pure subroutine ProcessPositions(employees, unique, occurrences)
       implicit none
 
-      type(employee) :: employees(:), types(:)
+      type(employee) :: employees(:), unique(:)
       integer        :: occurrences(:)
       intent(in) employees
-      intent(out) types, occurrences
+      intent(out) unique, occurrences
 
-      integer                     :: nth, i, duplicates, records
       type(employee), allocatable :: filtered(:)
       logical, allocatable        :: repeated(:)
 
-      records = size(employees(:))
-      allocate(repeated(records))
+      allocate(repeated(size(employees)))
 
-      nth = 1
-      duplicates = 0
       repeated = .false.
       filtered = employees
 
-      do while (.not. all(repeated))
-         nth = nth + 1
-         types(nth)%position = filtered(1)%position
-         occurrences(nth) = count(types(nth)%position == employees(:)%position)
-         repeated = repeated .or. types(nth)%position == employees(:)%position
-         do i = 1, records
-            if (repeated(i) .eqv. .true.) then
-               duplicates = duplicates + 1
-            else
-               filtered(i - duplicates)%position = employees(i)%position
-            endif
-         enddo
-         duplicates = 0
-      enddo
+      call Filter_positions(employees, filtered, repeated, unique, occurrences, 1)
    end subroutine ProcessPositions
+
+   ! Рекурсивная фильтрация
+   pure recursive subroutine Filter_positions(original, filtered, repeated, unique, occurrences, nth)
+      implicit none
+      type(employee) :: filtered(:), unique(:), original(:)
+      integer        :: occurrences(:), nth
+      logical        :: repeated(:)
+      intent(inout) filtered, repeated, unique, occurrences
+      intent(in) nth, original
+
+      logical, allocatable :: newDuplicates(:)
+
+      unique(nth)%position = filtered(1)%position
+      newDuplicates = unique(nth)%position == original(:)%position
+      occurrences(nth) = count(newDuplicates)
+      repeated = repeated .or. newDuplicates
+
+      filtered = pack(original, repeated .neqv. .true.)
+
+      if (.not. all(repeated)) then
+         call Filter_positions(original, filtered, repeated, unique, occurrences, nth + 1)
+      endif
+   end subroutine Filter_positions
 
 end module Emp_Process
