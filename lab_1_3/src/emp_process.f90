@@ -6,39 +6,32 @@ module Emp_Process
 contains
 
 ! Подпроцесс для поиска и подсчета повторений профессий
-   pure subroutine ProcessPositions(employees, types, occurrences)
+   pure subroutine ProcessPositions(employees, unique, occurrences)
       implicit none
 
-      type(employee) :: employees(:), types(:)
+      type(employee) :: employees(:), unique(:)
       integer        :: occurrences(:)
       intent(in) employees
-      intent(out) types, occurrences
+      intent(out) unique, occurrences
 
-      integer                     :: nth, i, duplicates, records
+      integer                     :: nth
       type(employee), allocatable :: filtered(:)
-      logical, allocatable        :: repeated(:)
+      logical, allocatable        :: repeated(:), newDuplicates(:)
 
-      records = size(employees(:))
-      allocate(repeated(records))
+      allocate(repeated(size(employees)))
+      repeated = .false.
 
       nth = 1
-      duplicates = 0
-      repeated = .false.
       filtered = employees
 
       do while (.not. all(repeated))
          nth = nth + 1
-         types(nth)%position = filtered(1)%position
-         occurrences(nth) = count(types(nth)%position == employees(:)%position)
-         repeated = repeated .or. types(nth)%position == employees(:)%position
-         do i = 1, records
-            if (repeated(i) .eqv. .true.) then
-               duplicates = duplicates + 1
-            else
-               filtered(i - duplicates)%position = employees(i)%position
-            endif
-         enddo
-         duplicates = 0
+         unique(nth)%position = filtered(1)%position
+         newDuplicates = unique(nth)%position == employees(:)%position
+         occurrences(nth) = count(newDuplicates)
+         repeated = repeated .or. newDuplicates
+
+         filtered = pack(employees, repeated .neqv. .true.)
       enddo
    end subroutine ProcessPositions
 
