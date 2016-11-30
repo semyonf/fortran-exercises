@@ -1,4 +1,4 @@
-program lab_1_3
+program lab_1_4
     use Environment
     use Emp_IO
     use Emp_Process
@@ -16,4 +16,4 @@ program lab_1_3
     call ProcessPositions(employees, types, occurrences)
     call WritePositionsOccured(output_file, types, occurrences)
 
-end program lab_1_3
+end program lab_1_4
