@@ -5,7 +5,7 @@ module Emp_IO
     integer, parameter :: N_RECORDS  = 15, &
                           L_NAME     = 15, &
                           L_POSITION = 15
- 
+
     ! Структура данных для хранения данных о сотруднике
     type employee
         character(L_NAME, kind=CH_)     :: name     = ""
