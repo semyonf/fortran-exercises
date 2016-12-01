@@ -2,11 +2,10 @@ program lab_1_2
    use Environment
 
    implicit none
-   integer, parameter          :: N_RECORDS = 15, L_NAME = 15, L_POSITION = 15
-   character(kind=CH_)         :: names(N_RECORDS, L_NAME), positions(N_RECORDS, L_POSITION), types(N_RECORDS, L_POSITION)
-   integer                     :: In, Out, occurrences(N_RECORDS, 1)
-   character(*), parameter     :: input_file = "../data/input.txt", &
-                           output_file = "output.txt"
+   integer, parameter      :: N_RECORDS = 15, L_NAME = 15, L_POSITION = 15
+   character(kind=CH_)     :: names(N_RECORDS, L_NAME), positions(N_RECORDS, L_POSITION), types(N_RECORDS, L_POSITION)
+   integer                 :: In, Out, occurrences(N_RECORDS, 1)
+   character(*), parameter :: input_file = "../data/input.txt", output_file = "output.txt"
 
    ! Чтение списка сотрудников
    call ReadEmployeeList(input_file, names, positions)
@@ -32,8 +31,8 @@ contains
       intent(out) types, occurrences
 
       integer                          :: N_unique = 0, i = 0, duplicates = 0
-      character(kind=CH_), allocatable :: newPositions(:,:)
       logical                          :: repeated(N_RECORDS) = .false.
+      character(kind=CH_), allocatable :: newPositions(:,:)
 
       newPositions = positions
 

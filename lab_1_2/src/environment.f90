@@ -2,7 +2,7 @@ module environment
    use ISO_Fortran_Env
 
    implicit none
-    
+
    integer, parameter      :: I_ = INT32                             ! Разновидность типа для целочисленных переменных.
    integer, parameter      :: R_ = REAL32                            ! Разновидность типа для вещественных переменных.
    integer, parameter      :: C_ = R_                                ! Разновидность типа для компексных переменных.
