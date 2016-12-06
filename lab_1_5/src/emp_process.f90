@@ -5,35 +5,52 @@ module Emp_Process
 
 contains
 
-   ! Подпроцесс для поиска и подсчета повторений профессий
-   pure subroutine ProcessPositions(employees, unique, occurrences)
-      implicit none
+   ! Для получения размера списка (количества сотрудников)
+   pure recursive subroutine Count_List_Size(Employee_List, Size)
+      type(employee) :: Employee_List
+      integer        :: Size
 
-      type(employee), pointer :: employees, unique(:)
+      intent(in)  :: Employee_List
+      intent(out) :: Size
+
+      Size = Size + 1
+
+      if (Associated(Employee_List%next)) then
+         call Count_List_Size(Employee_List%next, Size)
+      endif
+   end subroutine Count_List_Size
+
+   ! Подпроцесс для поиска и подсчета повторений профессий
+   pure subroutine ProcessPositions(Employee_List, unique, occurrences)
+
+      type(employee), pointer :: Employee_List, unique(:)
       integer                 :: occurrences(:)
 
-      intent(in)  :: employees
+      intent(in)  :: Employee_List
       intent(out) :: unique, occurrences
 
-      type(employee), allocatable :: filtered(:)
+      type(employee) :: filtered
       logical, allocatable        :: repeated(:)
+      integer                     :: Size
 
-      allocate(repeated(size(employees)))
+      call Count_List_Size(Employee_List, Size)
+
+      allocate(repeated(size))
 
       repeated = .false.
-      filtered = employees
+      filtered = Employee_List
 
-      call Filter_positions(employees, filtered, repeated, unique, occurrences, 1)
+      call Filter_positions(Employee_List, filtered, repeated, unique, occurrences, 1)
    end subroutine ProcessPositions
 
    ! Рекурсивная фильтрация
    pure recursive subroutine Filter_positions(original, filtered, repeated, unique, occurrences, nth)
-      implicit none
       type(employee) :: filtered(:), unique(:), original(:)
       integer        :: occurrences(:), nth
       logical        :: repeated(:)
-      intent(inout) filtered, repeated, unique, occurrences
-      intent(in) nth, original
+
+      intent(inout) :: filtered, repeated, unique, occurrences
+      intent(in)    :: nth, original
 
       logical, allocatable :: newDuplicates(:)
 

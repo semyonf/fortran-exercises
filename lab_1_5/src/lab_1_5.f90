@@ -16,4 +16,6 @@ program lab_1_5
       call WritePositionsOccured(Output_file, types, occurrences)
    endif
 
+   write(*,*) sizz
+
 end program lab_1_5
