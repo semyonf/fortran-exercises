@@ -2,9 +2,9 @@ module Emp_IO
    use Environment
    implicit none
 
-   integer, parameter :: N_RECORDS = 15, L_NAME = 15, L_POSITION = 15
+   integer, parameter :: L_NAME = 15, L_POSITION = 15
 
-   ! Структура данных для хранения данных о сотруднике
+   ! Структура для хранения данных о сотруднике
    type employee
       character(L_NAME, kind=CH_)     :: name     = ""
       character(L_POSITION, kind=CH_) :: position = ""
@@ -28,12 +28,12 @@ contains
    recursive function Read_employee(In) result(dude)
       type(employee), pointer :: dude
       integer, intent(in)     :: In
+
       integer  IO
-      character(:), allocatable :: format
+      character(*), parameter :: format = '(2a15)'
 
-      allocate (dude)
+      allocate(dude)
 
-      format = '(2a15)'
       read (In, format, iostat=IO) dude%name, dude%position
       call Handle_IO_status(IO, "reading line from file")
       if (IO == 0) then
@@ -45,49 +45,48 @@ contains
    end function Read_employee
 
    ! Вывод списка сотрудников
-   subroutine Output_employee_list(output_file, employees, List_name, Position)
+   subroutine Output_employee_list(Output_file, Employee_List, Position)
       implicit none
-      character(*), intent(in)   :: output_file, list_name, Position
-      type(employee), intent(in) :: employees
+      character(*), intent(in)   :: Output_file, Position
+      type(employee), intent(in) :: Employee_List
       integer :: Out
 
       open (file=Output_File, encoding=E_, Position=Position, newunit=Out)
-         write(out, '(a)') List_name
-         call Output_employee(Out, employees)
+         write(out, '(a)') 'Исходный список:'
+         call Output_employee(Out, Employee_List)
       close (Out)
    end subroutine Output_employee_list
 
    ! Процедура для вывода каждого сотрудника
-   recursive subroutine Output_employee(Out, dude)
+   recursive subroutine Output_employee(Out, Employee_List)
       integer, intent(in)        :: Out
-      type(employee), intent(in) :: dude
+      type(employee), intent(in) :: Employee_List
 
       integer :: IO
-      character(:), allocatable :: format
+      character(*), parameter :: format = '(2a15)'
 
-      format = '(2a15)'
-      write (Out, format, iostat=IO) dude%name, dude%position
+      write (Out, format, iostat=IO) Employee_List%name, Employee_List%position
       call Handle_IO_status(IO, "writing employee")
-      if (Associated(dude%next)) &
-         call Output_employee(Out, dude%next)
+      if (Associated(Employee_List%next)) &
+         call Output_employee(Out, Employee_List%next)
    end subroutine Output_employee
 
    ! --------------------------------------
 
    ! Подпроцесс для записи списка профессий
-   subroutine WritePositionsOccured(output_file, types, occurrences)
+   subroutine WritePositionsOccured(Output_file, types, occurrences)
       implicit none
 
-      character(*)   output_file
+      character(*)   Output_file
       type(employee) types(:)
       integer        occurrences(:)
-      intent(in) output_file, types, occurrences
+      intent(in) Output_file, types, occurrences
 
       integer :: Out, IO, i
       character(:), allocatable :: format
       format = '(a,a,i)'
 
-      open (file=output_file, encoding=E_, position="append", newunit=Out)
+      open (file=Output_file, encoding=E_, position="append", newunit=Out)
          write(Out, '(/a)') 'Количество профессий:'
          do i = 0, count(occurrences /= 0)
             write(Out, format, iostat=IO) types(i)%position, ' -> ',occurrences(i)
