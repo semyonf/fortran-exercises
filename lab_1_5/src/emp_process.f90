@@ -15,9 +15,8 @@ contains
 
       Size = Size + 1
 
-      if (Associated(Employee_List%next)) then
+      if (Associated(Employee_List%next)) &
          call Count_List_Size(Employee_List%next, Size)
-      endif
    end subroutine Count_List_Size
 
    ! Подпроцесс для поиска и подсчета повторений профессий
@@ -34,7 +33,6 @@ contains
       integer                     :: Size
 
       call Count_List_Size(Employee_List, Size)
-
       allocate(repeated(size))
 
       repeated = .false.
