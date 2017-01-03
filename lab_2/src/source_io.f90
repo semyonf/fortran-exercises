@@ -21,6 +21,12 @@ contains
       open (file=ConfigFile, newunit=In)
            read(In, *) First, Last, K
       close (In)
+
+      if (.not. (First <= Last .and. (K < First .or. K > Last))) then
+         write(*,*) 'Incorrect settings'
+         STOP
+      endif
+
    end subroutine Read_Config_File
 
    ! Чтение исходного кода

@@ -9,22 +9,20 @@ module Source_Process
 
 contains
 
-   ! pure recursive function Move_Lines(OriginalSource, Amount, From, To) result(MovedSource)
-   !    type(SourceLine), pointer    :: MovedSource
-   !    type(SourceLine), intent(in) :: OriginalSource
-   !    integer                      :: i
+   pure recursive function Move_Lines(Original, First, Last, K) result(Moved)
+      type(SourceLine), intent(in) :: Original
+      type(SourceLine), pointer    :: Moved
+      integer                      :: i
 
-   !    i = 1
+      i = 1
+   end function Move_Lines
 
-
-
-   ! end function Move_Lines
+   ! Старое
 
    ! Формирование разницы двух кодов в виде новых строк.
    pure recursive function Diff_Codes(InitialCode, ModdedCode) result(DiffCode)
       type(SourceLine), pointer     :: DiffCode
-      type(SourceLine), intent(in)  :: InitialCode
-      type(SourceLine), intent(in)  :: ModdedCode
+      type(SourceLine), intent(in)  :: InitialCode, ModdedCode
 
       ! Поиск и запись отличных строк в рамках исходного файла InitialCode.
       ! Если строки равны:

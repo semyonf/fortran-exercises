@@ -7,7 +7,7 @@ program lab_2
    character(:), allocatable :: SourceFile, ConfigFile, OutputFile
    integer                   :: First, Last, K
 
-   type(SourceLine), pointer :: Original   => Null() ! Первоначальный текст
+   type(SourceLine), pointer :: Original   => Null() ! Оригинальный текст
    type(SourceLine), pointer :: MovedLines => Null() ! Текст с перемещенными строками
 
    ConfigFile = "../data/config.txt"
@@ -16,21 +16,14 @@ program lab_2
 
    call Read_Config_File(ConfigFile, First, Last, K)
 
-   if (First <= Last .and. (K < First .or. K > Last)) then
-      write(*,*) 'OK'
-   else
-      write(*,*) 'NOT OK'
+   Original => Read_Source_Code(SourceFile)
+
+   if (Associated(Original)) then
+      MovedLines => Move_Lines(Original, First, Last, K)
+
+      if (Associated(MovedLines)) &
+         call Output_Source_Code(OutputFile, MovedLines)
+
    endif
-
-   ! Original => Read_Source_Code(SourceFile)
-
-   ! if (Associated(Original) .and. Associated(Config)) then
-
-
-   !    MovedLines => Move_Lines(Original, Config)
-
-   !    if (Associated(MovedLines)) &
-   !    call Output_Source_Code(OutputFile, MovedLines)
-   ! end if
 
 end program lab_2
