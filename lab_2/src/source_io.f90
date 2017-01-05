@@ -4,10 +4,10 @@ module Source_IO
    implicit none
 
    ! Структура данных для хранения строки исходного текста
-   type SourceLine
+   type TextLine
       character(:, CH_), allocatable   :: String
-      type(SourceLine), pointer        :: Next  => Null()
-   end type SourceLine
+      type(TextLine), pointer        :: Next  => Null()
+   end type TextLine
 
 contains
 
@@ -30,23 +30,23 @@ contains
    end subroutine Read_Config_File
 
    ! Чтение исходного кода
-   function Read_Source_Code(InputFile) result (Code)
-      type(SourceLine), pointer  :: Code
+   function Read_Source(InputFile) result (Source)
+      type(TextLine), pointer  :: Source
       character(*), intent(in)   :: InputFile
       integer  :: In
 
       open (file=InputFile, encoding=E_, newunit=In)
-         Code => Read_Source_Line(in)
+         Source => Read_Source_Line(In)
       close (In)
-   end function Read_Source_Code
+   end function Read_Source
 
    ! Чтение строки исходного кода
    recursive function Read_Source_Line(in) result(Code)
-      type(SourceLine), pointer  :: Code
-      integer, intent(in)        :: In
-      integer, parameter      :: max_len = 1024
-      character(max_len, CH_) :: string
-      integer                 :: IO
+      type(TextLine), pointer :: Code
+      integer, intent(in)       :: In
+      integer, parameter        :: max_len = 1024
+      character(max_len, CH_)   :: string
+      integer                   :: IO
 
       ! Чтение строки во временную строку бОльшей длины
       read (In, "(a)", iostat=IO) string
@@ -64,7 +64,7 @@ contains
    ! Вывод исходного кода
    subroutine Output_Source_Code(OutputFile, Code)
       character(*), intent(in)      :: OutputFile
-      type(SourceLine), intent(in)  :: Code
+      type(TextLine), intent(in)  :: Code
       integer  :: Out
 
       open (file=OutputFile, encoding=E_, newunit=Out)
@@ -75,7 +75,7 @@ contains
    ! Вывод строки исходного кода
    recursive subroutine Output_Source_Line(Out, Code)
       integer, intent(in)           :: Out
-      type(SourceLine), intent(in)  :: Code
+      type(TextLine), intent(in)  :: Code
       integer  :: IO
 
       write (Out, "(a)", iostat=IO) Code%String
