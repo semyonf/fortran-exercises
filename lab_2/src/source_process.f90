@@ -14,7 +14,7 @@ contains
 
       test = K
 
-      Moving => Form_Block(Original, First - 1, Last, 1)
+      Moving => Form_Block(Original, First, Last, 1)
    end function Move_Lines
 
    ! Формирование блока переносимых строк
@@ -25,7 +25,7 @@ contains
 
       allocate (Block)
 
-      if (Start < Current) then
+      if (Start <= Current) then
          Block%String = Original%String
          if (Current < End .and. Associated(Original%next)) then
                Block%next => Form_Block(Original%next, Start, End, Current + 1)
