@@ -26,7 +26,6 @@ contains
          write(*,*) 'Incorrect settings'
          STOP
       endif
-
    end subroutine Read_Config_File
 
    ! Чтение исходного кода
