@@ -5,7 +5,7 @@ module Source_IO
 
    ! Структура данных для хранения строки исходного текста
    type TextLine
-      character(:, CH_), allocatable   :: String
+      character(:, CH_), allocatable :: String
       type(TextLine), pointer        :: Next  => Null()
    end type TextLine
 

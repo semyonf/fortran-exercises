@@ -27,15 +27,14 @@ contains
 
       if (Start <= Current) then
          Block%String = Original%String
-         if (Current < End .and. Associated(Original%next)) then
-               Block%next => Form_Block(Original%next, Start, End, Current + 1)
+         if (Current < End .and. Associated(Original%Next)) then
+            Block%Next => Form_Block(Original%Next, Start, End, Current + 1)
          endif
       else
-         if (Associated(Original%next)) then
-            Block => Form_Block(Original%next, Start, End, Current + 1)
+         if (Associated(Original%Next)) then
+            Block => Form_Block(Original%Next, Start, End, Current + 1)
          endif
       endif
-
    end function Form_Block
 
    ! pure recursive function Add_Recent_Source_Lines(ModdedCode) result(DiffCode)
@@ -44,8 +43,8 @@ contains
 
    !    allocate (DiffCode)
    !    DiffCode%String = CH__"++ " // ModdedCode%String
-   !    if (Associated(ModdedCode%next)) &
-   !       DiffCode%next => Add_Recent_Source_Lines(ModdedCode%Next)
+   !    if (Associated(ModdedCode%Next)) &
+   !       DiffCode%Next => Add_Recent_Source_Lines(ModdedCode%Next)
    ! end function Add_Recent_Source_Lines
 
 
@@ -55,8 +54,8 @@ contains
 
    !    allocate (DiffCode)
    !    DiffCode%String = CH__"++ " // ModdedCode%String
-   !    if (Associated(ModdedCode%next)) &
-   !       DiffCode%next => Add_Recent_Source_Lines(ModdedCode%Next)
+   !    if (Associated(ModdedCode%Next)) &
+   !       DiffCode%Next => Add_Recent_Source_Lines(ModdedCode%Next)
    ! end function Add_Recent_Source_Lines
 
 
@@ -69,18 +68,18 @@ contains
    !    ! Если строки равны:
    !    if (InitialCode%String == ModdedCode%String) then
    !       ! Если остались ещё строки, то переход к следующей.
-   !       if (Associated(InitialCode%next)) then
-   !          DiffCode => Diff_Codes(InitialCode%next, ModdedCode%Next)
+   !       if (Associated(InitialCode%Next)) then
+   !          DiffCode => Diff_Codes(InitialCode%Next, ModdedCode%Next)
    !       ! В противном случае если остались строки в модифицированном файле, то добавление их в список.
-   !       else if (Associated(ModdedCode%next)) then
+   !       else if (Associated(ModdedCode%Next)) then
    !          ! Запись всех строк оставшейся части ModdedCode.
-   !          DiffCode => Add_Recent_Source_Lines(ModdedCode%next)
+   !          DiffCode => Add_Recent_Source_Lines(ModdedCode%Next)
    !       end if
    !    ! Если строки не равны, то добавление её в список.
    !    else
    !       allocate (DiffCode)
    !       DiffCode%String = CH__"++ " // ModdedCode%String
-   !       DiffCode%next => Diff_Codes(InitialCode, ModdedCode%Next)
+   !       DiffCode%Next => Diff_Codes(InitialCode, ModdedCode%Next)
    !    end if
    ! end function Diff_Codes
 
