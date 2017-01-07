@@ -11,9 +11,9 @@ contains
       type(TextLine), intent(in) :: Original
       type(TextLine), pointer    :: Block, Prepared, Result
 
-      Block => Get_Cut_Lines(.false., Original, First, Last, 1)                 ! Получили переносимые строки
-      Prepared => Get_Cut_Lines(.true.,Original, First, Last, 1)               ! Удалили переносимые строки с их мест
-      Result => Paste_Lines(Prepared, Block, K - (Last - First), 1) ! Вставили строки на требуемое место
+      Block    => Get_Cut_Lines(.false., Original, First, Last, 1)    ! Получили переносимые строки
+      Prepared => Get_Cut_Lines(.true.,Original, First, Last, 1)      ! Удалили переносимые строки с их мест
+      Result   => Paste_Lines(Prepared, Block, K - (Last - First), 1) ! Вставили строки на требуемое место
    end function Move_Lines
 
    ! Функция для получения вырезаемых строк (или наоборот, НЕвырезаемых)
@@ -25,7 +25,6 @@ contains
       type(TextLine), pointer :: Lines
 
       allocate (Lines)
-
       if (Inverted) then
          if (Start <= Current .and. Current <= End) then
             Lines => Get_Cut_Lines(Inverted, Source%Next, Start, End, Current + 1)
@@ -57,7 +56,6 @@ contains
       type(TextLine), pointer :: Final
 
       allocate (Final)
-
       if (Current < Position .or. .not. Associated(Block%Next)) then
          Final%String = Prepared%String
          if (Associated(Prepared%Next)) &
