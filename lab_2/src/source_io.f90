@@ -19,7 +19,7 @@ contains
       integer                   :: In
 
       open (file=ConfigFile, newunit=In)
-           read(In, *) First, Last, K
+         read(In, *) First, Last, K
       close (In)
 
       if (.not. (First <= Last .and. (K < First .or. K > Last))) then
@@ -30,9 +30,10 @@ contains
 
    ! Чтение исходного кода
    function Read_Source(InputFile) result (Source)
-      type(TextLine), pointer  :: Source
-      character(*), intent(in)   :: InputFile
-      integer  :: In
+      character(*), intent(in) :: InputFile
+
+      type(TextLine), pointer :: Source
+      integer                 :: In
 
       open (file=InputFile, encoding=E_, newunit=In)
          Source => Read_Source_Line(In)
