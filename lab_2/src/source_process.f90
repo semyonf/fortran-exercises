@@ -6,22 +6,43 @@ module Source_Process
 
 contains
 
-   pure function Move_Lines(Original, First, Last, K) result(Moving)
+   pure function Move_Lines(Original, First, Last, K) result(Ressie)
       integer, intent(in)        :: First, Last, K
       type(TextLine), intent(in) :: Original
-      type(TextLine), pointer    :: Moving
-      integer :: test
+      type(TextLine), pointer    :: Block, Prepared, Ressie
 
-      test = K
+      Block => Form_Block(Original, First, Last, 1)   ! Получили переносимые строки
+      Prepared => Cut_Lines(Original, First, Last, 1) ! Удалили переносимые строки с их мест
+      Ressie => Paste_Lines(Prepared, Block, K - (Last - First), 1)    ! Вставили строки на требуемое место
 
-      Moving => Form_Block(Original, First, Last, 1)
+
    end function Move_Lines
 
-   ! Формирование блока переносимых строк
-   pure recursive function Form_Block(Original, Start, End, Current) result(Block)
-      type(TextLine), pointer     :: Block
+   ! Получение строк кроме тех, которые в диапазоне
+   pure recursive function Cut_Lines(Original, Start, End, Current) result(Prepared)
       type(TextLine), intent(in)  :: Original
       integer, intent(in)         :: Start, End, Current
+
+      type(TextLine), pointer :: Prepared
+
+      allocate (Prepared)
+
+      if (Start <= Current .and. Current <= End) then
+         Prepared => Cut_Lines(Original%Next, Start, End, Current + 1)
+      else
+         Prepared%String = Original%String
+         if (Associated(Original%Next)) then
+            Prepared%Next => Cut_Lines(Original%Next, Start, End, Current + 1)
+         endif
+      endif
+   end function Cut_Lines
+
+   ! Получение строк из диапазона
+   pure recursive function Form_Block(Original, Start, End, Current) result(Block)
+      type(TextLine), intent(in)  :: Original
+      integer, intent(in)         :: Start, End, Current
+
+      type(TextLine), pointer :: Block
 
       allocate (Block)
 
@@ -37,50 +58,23 @@ contains
       endif
    end function Form_Block
 
-   ! pure recursive function Add_Recent_Source_Lines(ModdedCode) result(DiffCode)
-   !    type(TextLine), pointer     :: DiffCode
-   !    type(TextLine), intent(in)  :: ModdedCode
+   ! Вставка строк в указанное место
+   pure recursive function Paste_Lines(Prepared, Block, Position, Current) result(Final)
+      type(TextLine), intent(in) :: Prepared, Block
+      integer, intent(in)        :: Position, Current
 
-   !    allocate (DiffCode)
-   !    DiffCode%String = CH__"++ " // ModdedCode%String
-   !    if (Associated(ModdedCode%Next)) &
-   !       DiffCode%Next => Add_Recent_Source_Lines(ModdedCode%Next)
-   ! end function Add_Recent_Source_Lines
+      type(TextLine), pointer :: Final
 
+      allocate (Final)
 
-   ! pure recursive function Add_Recent_Source_Lines(ModdedCode) result(DiffCode)
-   !    type(TextLine), pointer     :: DiffCode
-   !    type(TextLine), intent(in)  :: ModdedCode
-
-   !    allocate (DiffCode)
-   !    DiffCode%String = CH__"++ " // ModdedCode%String
-   !    if (Associated(ModdedCode%Next)) &
-   !       DiffCode%Next => Add_Recent_Source_Lines(ModdedCode%Next)
-   ! end function Add_Recent_Source_Lines
-
-
-   ! ! Формирование разницы двух кодов в виде новых строк.
-   ! pure recursive function Diff_Codes(InitialCode, ModdedCode) result(DiffCode)
-   !    type(TextLine), pointer     :: DiffCode
-   !    type(TextLine), intent(in)  :: InitialCode, ModdedCode
-
-   !    ! Поиск и запись отличных строк в рамках исходного файла InitialCode.
-   !    ! Если строки равны:
-   !    if (InitialCode%String == ModdedCode%String) then
-   !       ! Если остались ещё строки, то переход к следующей.
-   !       if (Associated(InitialCode%Next)) then
-   !          DiffCode => Diff_Codes(InitialCode%Next, ModdedCode%Next)
-   !       ! В противном случае если остались строки в модифицированном файле, то добавление их в список.
-   !       else if (Associated(ModdedCode%Next)) then
-   !          ! Запись всех строк оставшейся части ModdedCode.
-   !          DiffCode => Add_Recent_Source_Lines(ModdedCode%Next)
-   !       end if
-   !    ! Если строки не равны, то добавление её в список.
-   !    else
-   !       allocate (DiffCode)
-   !       DiffCode%String = CH__"++ " // ModdedCode%String
-   !       DiffCode%Next => Diff_Codes(InitialCode, ModdedCode%Next)
-   !    end if
-   ! end function Diff_Codes
+      if (Current < Position .or. .not. Associated(Block%Next)) then
+         Final%String = Prepared%String
+         if (Associated(Prepared%Next)) &
+            Final%Next => Paste_Lines(Prepared%Next, Block, Position, Current + 1)
+      else
+         Final%String = Block%String
+         Final%Next => Paste_Lines(Prepared, Block%Next, Position, Current + 1)
+      endif
+   end function Paste_Lines
 
 end module Source_process
