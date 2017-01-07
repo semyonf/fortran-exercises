@@ -6,57 +6,48 @@ module Source_Process
 
 contains
 
-   pure function Move_Lines(Original, First, Last, K) result(Ressie)
+   pure function Move_Lines(Original, First, Last, K) result(Result)
       integer, intent(in)        :: First, Last, K
       type(TextLine), intent(in) :: Original
-      type(TextLine), pointer    :: Block, Prepared, Ressie
+      type(TextLine), pointer    :: Block, Prepared, Result
 
-      Block => Form_Block(Original, First, Last, 1)   ! Получили переносимые строки
-      Prepared => Cut_Lines(Original, First, Last, 1) ! Удалили переносимые строки с их мест
-      Ressie => Paste_Lines(Prepared, Block, K - (Last - First), 1)    ! Вставили строки на требуемое место
-
-
+      Block => Get_Cut_Lines(.false., Original, First, Last, 1)                 ! Получили переносимые строки
+      Prepared => Get_Cut_Lines(.true.,Original, First, Last, 1)               ! Удалили переносимые строки с их мест
+      Result => Paste_Lines(Prepared, Block, K - (Last - First), 1) ! Вставили строки на требуемое место
    end function Move_Lines
 
-   ! Получение строк кроме тех, которые в диапазоне
-   pure recursive function Cut_Lines(Original, Start, End, Current) result(Prepared)
-      type(TextLine), intent(in)  :: Original
-      integer, intent(in)         :: Start, End, Current
+   ! Функция для получения вырезаемых строк (или наоборот, НЕвырезаемых)
+   pure recursive function Get_Cut_Lines(Inverted, Source, Start, End, Current) result(Lines)
+      type(TextLine), intent(in) :: Source
+      logical, intent(in)        :: Inverted
+      integer, intent(in)        :: Start, End, Current
 
-      type(TextLine), pointer :: Prepared
+      type(TextLine), pointer :: Lines
 
-      allocate (Prepared)
+      allocate (Lines)
 
-      if (Start <= Current .and. Current <= End) then
-         Prepared => Cut_Lines(Original%Next, Start, End, Current + 1)
-      else
-         Prepared%String = Original%String
-         if (Associated(Original%Next)) then
-            Prepared%Next => Cut_Lines(Original%Next, Start, End, Current + 1)
-         endif
-      endif
-   end function Cut_Lines
-
-   ! Получение строк из диапазона
-   pure recursive function Form_Block(Original, Start, End, Current) result(Block)
-      type(TextLine), intent(in)  :: Original
-      integer, intent(in)         :: Start, End, Current
-
-      type(TextLine), pointer :: Block
-
-      allocate (Block)
-
-      if (Start <= Current) then
-         Block%String = Original%String
-         if (Current < End .and. Associated(Original%Next)) then
-            Block%Next => Form_Block(Original%Next, Start, End, Current + 1)
+      if (Inverted) then
+         if (Start <= Current .and. Current <= End) then
+            Lines => Get_Cut_Lines(Inverted, Source%Next, Start, End, Current + 1)
+         else
+            Lines%String = Source%String
+            if (Associated(Source%Next)) then
+               Lines%Next => Get_Cut_Lines(Inverted, Source%Next, Start, End, Current + 1)
+            endif
          endif
       else
-         if (Associated(Original%Next)) then
-            Block => Form_Block(Original%Next, Start, End, Current + 1)
+         if (Start <= Current) then
+            Lines%String = Source%String
+            if (Current <= End .and. Associated(Source%Next)) then
+               Lines%Next => Get_Cut_Lines(Inverted, Source%Next, Start, End, Current + 1)
+            endif
+         else
+            if (Associated(Source%Next)) then
+               Lines => Get_Cut_Lines(Inverted, Source%Next, Start, End, Current + 1)
+            endif
          endif
       endif
-   end function Form_Block
+   end function Get_Cut_Lines
 
    ! Вставка строк в указанное место
    pure recursive function Paste_Lines(Prepared, Block, Position, Current) result(Final)
