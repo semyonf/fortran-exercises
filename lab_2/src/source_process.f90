@@ -7,9 +7,13 @@ module Source_Process
 contains
 
    pure function Move_Lines(Original, First, Last, K) result(Result)
-      integer, intent(in)        :: First, Last, K
-      type(TextLine), intent(in) :: Original
-      type(TextLine), pointer    :: Block, Prepared, Result
+
+      intent(in) &
+         First, Last, K, Original
+
+      integer                 :: First, Last, K
+      type(TextLine)          :: Original
+      type(TextLine), pointer :: Block, Prepared, Result
 
       Block    => Get_Cut_Lines(.false., Original, First, Last, 1)    ! Получили переносимые строки
       Prepared => Get_Cut_Lines(.true.,Original, First, Last, 1)      ! Удалили переносимые строки с их мест
@@ -18,9 +22,13 @@ contains
 
    ! Функция для получения вырезаемых строк (или наоборот, НЕвырезаемых)
    pure recursive function Get_Cut_Lines(Inverted, Source, Start, End, Current) result(Lines)
-      type(TextLine), intent(in) :: Source
-      logical, intent(in)        :: Inverted
-      integer, intent(in)        :: Start, End, Current
+
+      intent(in) &
+         Source, Inverted, Start, End, Current
+
+      type(TextLine) :: Source
+      logical        :: Inverted
+      integer        :: Start, End, Current
 
       type(TextLine), pointer :: Lines
 
@@ -50,8 +58,12 @@ contains
 
    ! Вставка строк в указанное место
    pure recursive function Paste_Lines(Prepared, Block, Position, Current) result(Final)
-      type(TextLine), intent(in) :: Prepared, Block
-      integer, intent(in)        :: Position, Current
+
+      intent(in) &
+         Prepared, Block, Position, Current
+
+      type(TextLine) :: Prepared, Block
+      integer        :: Position, Current
 
       type(TextLine), pointer :: Final
 
