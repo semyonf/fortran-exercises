@@ -15,4 +15,5 @@ clean:
 
 run:
 	cd ./bin; ./lab_3
-	cat ./bin/output.txt
+	cat ./bin/F2.txt
+	cat ./bin/F3.txt
