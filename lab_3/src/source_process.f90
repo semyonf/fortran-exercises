@@ -26,7 +26,6 @@ contains
       integer        :: Current, Size
 
       Size = Current + 1
-
       if (Associated(List%NormalNext)) &
          Size = Count_Elements_In(List%NormalNext, Size)
    end function Count_Elements_In
