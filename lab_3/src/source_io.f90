@@ -48,31 +48,31 @@ contains
       end if
    end function Read_Text_Line
 
-   ! Вывод исходного кода
-   subroutine Output_Source_Code(OutputFile, Code)
+   ! Вывод исходного текста
+   subroutine Output_Source_Code(OutputFile, Text)
 
-      intent(in) OutputFile, Code
+      intent(in) OutputFile, Text
 
       character(*)   :: OutputFile
-      type(TextLine) :: Code
+      type(TextLine) :: Text
       integer        :: Out
 
       open (file=OutputFile, encoding=E_, newunit=Out)
-         call Output_Source_Line(Out, Code)
+         call Output_Source_Line(Out, Text)
       close (Out)
    end subroutine Output_Source_Code
 
-   ! Вывод строки исходного кода
-   recursive subroutine Output_Source_Line(Out, Code)
+   ! Вывод строки исходного текста
+   recursive subroutine Output_Source_Line(Out, Text)
 
-      intent(in) Out, Code
+      intent(in) Out, Text
 
       integer        :: Out, IO
-      type(TextLine) :: Code
+      type(TextLine) :: Text
 
-      write (Out, "(a)", iostat=IO) Code%Characters
+      write (Out, "(a)", iostat=IO) Text%Characters
       call Handle_IO_Status(IO, "writing line to file")
-      if (Associated(Code%NormalNext)) &
-         call Output_Source_Line(Out, Code%NormalNext)
+      if (Associated(Text%NormalNext)) &
+         call Output_Source_Line(Out, Text%NormalNext)
    end subroutine Output_Source_Line
 end module Source_IO
