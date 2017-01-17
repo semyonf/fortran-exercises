@@ -18,6 +18,8 @@ program lab_3
    F3 = "F3.txt"
 
    Original => Read_Text(F1)
+   write(*,*) len(Original%Characters)
+   write(*,*) len(Original%NormalNext%Characters)
 
    if (Associated(Original)) then
       Original => Add_Sorting_To(Original)

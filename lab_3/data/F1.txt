@@ -1,4 +1,4 @@
-String of length 20
-Another string of length 28
-Yet another string of length 32
-Yet another super long kinda string of length 49
+String of length 19
+Another string of length 27
+Yet another string of length 31
+Yet another super long kinda string of length 48
