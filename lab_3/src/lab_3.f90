@@ -20,8 +20,7 @@ program lab_3
    Original => Read_Text(F1)
 
    if (Associated(Original)) then
-      write(*,*) Add_Sorting_To(Original)
-      ! Original => AddSorting(Original)
+      Original => Add_Sorting_To(Original)
       call Output_Source_Code(F2, Original)
       call Output_Source_Code(F3, Original)
    endif

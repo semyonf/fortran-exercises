@@ -6,21 +6,20 @@ module Source_Process
 
 contains
 
-   pure function Add_Sorting_To(List) result(SizeOfList)
-
+   pure function Add_Sorting_To(List) result(SortedList)
       intent(in) List
 
-      integer                 :: SizeOfList
       type(TextLine)          :: List
-      ! type(TextLine), pointer :: SortedList
+      type(TextLine), pointer :: SortedList
+      integer                 :: SizeOfList
+      integer, allocatable    :: LenghtsOfLines(:)
 
       SizeOfList = Count_Elements_In(List, 0)
-
+      allocate (SortedList, LenghtsOfLines(SizeOfList))
    end function Add_Sorting_To
 
    ! Подсчет элементов в списке
    pure recursive function Count_Elements_In(List, Current) result(Size)
-
       intent(in) List, Current
 
       type(TextLine) :: List
@@ -30,7 +29,6 @@ contains
 
       if (Associated(List%NormalNext)) &
          Size = Count_Elements_In(List%NormalNext, Size)
-
    end function Count_Elements_In
 
 end module Source_process
