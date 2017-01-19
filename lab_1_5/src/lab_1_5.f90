@@ -14,7 +14,7 @@ program lab_1_5
    allocate(OccupationList)
 
    if (Associated(EmployeeList)) then
-      call Output_Employee_List(OutputFile, EmployeeList)
+      ! call Output_Employee_List(OutputFile, EmployeeList)
       OccupationList => Process_Occupations_From(EmployeeList)
       call Output_Occupation_List(OutputFile, OccupationList)
    endif

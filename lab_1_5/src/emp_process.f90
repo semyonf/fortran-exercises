@@ -23,39 +23,58 @@ contains
       Allocate(Repeated(SizeOfList))
       Repeated = .false.
 
-      OccupationList => Form_Unique_Occupations(OccupationList, 1, Repeated)
+      OccupationList => Form_Unique_Occupations(OccupationList, Repeated)
 
    end function Process_Occupations_From
 
 
-   pure recursive function Form_Unique_Occupations(OccupationList, Current, Repeated) result(Unique_OccupationList)
 
-      intent(in) OccupationList, Current, Repeated
+   pure recursive function Form_Unique_Occupations(OccupationList, Repeated) result(Unique_OccupationList)
 
-      type(occupation)          :: OccupationList
-      type(occupation), pointer :: Unique_OccupationList
-      logical, allocatable      :: Repeated(:), Duplicates(:)
-      integer                   :: Current
+      intent(in) OccupationList, Repeated
 
-      if (.not. Repeated(Current)) then
-         Duplicates = Get_Duplicates_Of(OccupationList, OccupationList%Name, 1, Repeated)
+      type(occupation)                  :: OccupationList
+      type(occupation), pointer         :: Unique_OccupationList
+      logical, allocatable              :: Repeated(:), Duplicates(:), NewRepeated(:)
+      character(L_OCCUPATION, kind=CH_) :: NextUniqueName
+
+      if (.not. all(Repeated)) then
+
          Allocate(Unique_OccupationList)
 
-         Unique_OccupationList%Name        = OccupationList%Name
+         NextUniqueName             = Get_Next_Unique_Occupation_Name(OccupationList, Repeated, 1)
+         Unique_OccupationList%Name = NextUniqueName
+
+         Duplicates  = Get_Duplicates_Of(OccupationList, NextUniqueName, 1, Repeated)
          Unique_OccupationList%Occurrences = count(Duplicates)
+         NewRepeated = Repeated .or. Duplicates
 
-         Duplicates = Repeated .or. Duplicates
-      else
-         Duplicates = Repeated
+         if (.not. all(NewRepeated)) then
+            Unique_OccupationList%Next => Form_Unique_Occupations(OccupationList, NewRepeated)
+         endif
+
       endif
-
-      if (Associated(OccupationList%Next)) &
-         Unique_OccupationList%Next => Form_Unique_Occupations(OccupationList%Next, Current + 1, Duplicates)
-
    end function Form_Unique_Occupations
 
+   ! Функция для получения следующего названия неповторявшейся профессии
+   pure recursive function Get_Next_Unique_Occupation_Name(OccupationList, Repeated, Current) result(NextUniqueName)
 
-   ! Получение логического массива с элементами true там, где в списке указанная профессия встретилась
+      intent(in) :: OccupationList, Repeated, Current
+
+      type(occupation)                  :: OccupationList
+      logical, allocatable              :: Repeated(:)
+      integer                           :: Current
+      character(L_OCCUPATION, kind=CH_) :: NextUniqueName
+
+      if (.not. Repeated(Current)) then
+         NextUniqueName = OccupationList%Name
+      else
+         if (Associated(OccupationList%Next)) &
+            NextUniqueName = Get_Next_Unique_Occupation_Name(OccupationList%Next, Repeated, Current + 1)
+      endif
+   end function Get_Next_Unique_Occupation_Name
+
+   ! Получение маски, где в списке встретилась указанная профессия
    pure recursive function Get_Duplicates_Of(OccupationList, OccupationName, Current, Repeated) result(NewRepeated)
 
       intent(in) :: OccupationList, OccupationName, Current, Repeated
@@ -72,65 +91,6 @@ contains
       if (Associated(OccupationList%Next)) &
          NewRepeated = Get_Duplicates_Of(OccupationList%Next, OccupationName, Current + 1, NewRepeated)
    end function Get_Duplicates_Of
-
-
-   ! ! Функция для удаления из списка уже повторившихся профессий
-   ! pure recursive function Remove_Repeated(OccupationList, Unique_OccupationList, Repeated, Current) result(Unique_OccupationList)
-
-   !    intent(in) :: OccupationList, Repeated, Current, Unique_OccupationList
-
-   !    type(occupation)          :: OccupationList
-   !    type(occupation), pointer :: Unique_OccupationList
-   !    logical, allocatable      :: Repeated(:), NewRepeated(:)
-   !    integer                   :: Current
-
-   !    if (Repeated(Current) .eq. .false.) then
-   !       Allocate(Unique_OccupationList)
-   !       Unique_OccupationList%Name = OccupationList%Name
-   !       if (Associated(OccupationList%Next)) &
-   !          OccupationList%Next => Remove_Repeated(OccupationList%Next, Unique_OccupationList%Next, Repeated, Current + 1)
-   !    endif
-   ! end function Remove_Repeated
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
    ! Получение списка профессий из списка сотрудников EmployeeList
    pure recursive function Get_Occupations(EmployeeList) result(OccupationList)
@@ -159,46 +119,5 @@ contains
       if (Associated(OccupationList%Next)) &
          Size = Count_Occupations_In(OccupationList%Next, Current + 1)
    end function Count_Occupations_In
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   ! ! Подсчет вхождений профессии OccupationName в списке профессий OccupationList
-   ! pure recursive function Count_Occupation_Occurrences_In(OccupationList, OccupationName, Current) result(Occurrences)
-
-   !    intent(in) :: OccupationList, OccupationName, Current
-
-   !    character(L_OCCUPATION, kind=CH_) :: OccupationName
-   !    type(occupation)                  :: OccupationList
-   !    integer                           :: Current, Occurrences
-
-   !    Occurrences = Current
-
-   !    if (Associated(OccupationList%Next)) &
-   !       Occurrences = Count_Occupation_Occurrences_In(OccupationList%Next, OccupationName, Current + 1)
-   ! end function Count_Occupation_Occurrences_In
 
 end module Emp_Process
