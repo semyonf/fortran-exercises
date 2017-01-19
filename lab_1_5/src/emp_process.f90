@@ -1,67 +1,91 @@
 module Emp_Process
    use Environment
    use Emp_IO
+
    implicit none
 
 contains
 
-   ! Для получения размера списка (количества сотрудников)
-   pure recursive subroutine Count_List_Size(Employee_List, Size)
-      type(employee) :: Employee_List
-      integer        :: Size
+   ! Функция для вытягивания профессий и количества их вхождений из списка сотрудников
+   pure function Process_Occupations_From(EmployeeList) result(OccupationList)
 
-      intent(in)  :: Employee_List
-      intent(out) :: Size
+      intent(in) :: EmployeeList
 
-      Size = Size + 1
+      type(employee)            :: EmployeeList
+      type(occupation), pointer :: OccupationList
 
-      if (Associated(Employee_List%next)) &
-         call Count_List_Size(Employee_List%next, Size)
-   end subroutine Count_List_Size
+      allocate(OccupationList)
 
-   ! Подпроцесс для поиска и подсчета повторений профессий
-   pure subroutine ProcessPositions(Employee_List, unique, occurrences)
+      OccupationList%name = 'test'
+      OccupationList%Occurrences = 5
 
-      type(employee), pointer :: Employee_List, unique(:)
-      integer                 :: occurrences(:)
+      ! call Find_Unique_Occupations(EmployeeList, OccupationList)
 
-      intent(in)  :: Employee_List
-      intent(out) :: unique, occurrences
+   end function Process_Occupations_From
 
-      type(employee) :: filtered
-      logical, allocatable        :: repeated(:)
-      integer                     :: Size
+   ! Формирование списка уникальных профессий OccupationList в списке сотрудников EmployeeList
+   pure recursive subroutine Find_Unique_Occupations(EmployeeList, OccupationList)
 
-      call Count_List_Size(Employee_List, Size)
-      allocate(repeated(size))
+      intent(in)    :: EmployeeList
+      intent(inout) :: OccupationList
 
-      repeated = .false.
-      filtered = Employee_List
+      type(employee)            :: EmployeeList
+      type(occupation), pointer :: OccupationList
+      integer                   :: Occurrences
 
-      call Filter_positions(Employee_List, filtered, repeated, unique, occurrences, 1)
-   end subroutine ProcessPositions
+      Occurrences = Count_Occupation_Occurrences_In(OccupationList, EmployeeList%Occupation, 0)
 
-   ! Рекурсивная фильтрация
-   pure recursive subroutine Filter_positions(original, filtered, repeated, unique, occurrences, nth)
-      type(employee) :: filtered(:), unique(:), original(:)
-      integer        :: occurrences(:), nth
-      logical        :: repeated(:)
-
-      intent(inout) :: filtered, repeated, unique, occurrences
-      intent(in)    :: nth, original
-
-      logical, allocatable :: newDuplicates(:)
-
-      unique(nth)%position = filtered(1)%position
-      newDuplicates = unique(nth)%position == original(:)%position
-      occurrences(nth) = count(newDuplicates)
-      repeated = repeated .or. newDuplicates
-
-      filtered = pack(original, repeated .neqv. .true.)
-
-      if (.not. all(repeated)) then
-         call Filter_positions(original, filtered, repeated, unique, occurrences, nth + 1)
+      if (Occurrences .eq. 0) then
+         allocate(OccupationList)
+         OccupationList%Name = EmployeeList%Occupation
       endif
-   end subroutine Filter_positions
+
+      if (Associated(EmployeeList%Next)) &
+         call Find_Unique_Occupations(EmployeeList%Next, OccupationList%Next)
+
+   end subroutine Find_Unique_Occupations
+
+   ! Подсчет вхождений профессии OccupationName в списке профессий OccupationList
+   pure recursive function Count_Occupation_Occurrences_In(OccupationList, OccupationName, Current) result(Occurrences)
+
+      intent(in) :: OccupationList, OccupationName, Current
+
+      character(L_OCCUPATION, kind=CH_) :: OccupationName
+      type(occupation)                  :: OccupationList
+      integer                           :: Current, Occurrences
+
+      Occurrences = Current
+
+      if (Associated(OccupationList%Next)) &
+         Occurrences = Count_Occupation_Occurrences_In(OccupationList%Next, OccupationName, Current + 1)
+   end function Count_Occupation_Occurrences_In
+
+   ! ! Подсчет количества сотрудников в списке EmployeeList
+   ! pure recursive function Count_Elements_In(EmployeeList, Current) result(Size)
+
+   !    intent(in) EmployeeList, Current
+
+   !    type(employee) :: EmployeeList
+   !    integer        :: Current, Size
+
+   !    Size = Current
+   !    if (Associated(EmployeeList%Next)) &
+   !       Size = Count_Elements_In(EmployeeList%Next, Current + 1)
+   ! end function Count_Elements_In
+
+   ! ! Собрать OccupationList, содержащий UniqueOccupaions и количество их вхождений в EmployeeList
+   ! pure recursive function Get_Unique_Occupations_Occurences_List(EmployeeList, OccupationName, Current) result(Occurrences)
+
+   !    intent(in) EmployeeList, OccupationName, Current
+
+   !    character(L_OCCUPATION, kind=CH_) :: OccupationName
+   !    type(employee)                    :: EmployeeList
+   !    integer                           :: Current, Occurrences
+
+   !    Occurrences = Current
+
+   !    if (Associated(EmployeeList%Next)) &
+   !       Occurrences = Get_Unique_Occupations_Occurences_List(EmployeeList%Next, OccupationName, Current + 1)
+   ! end function Get_Unique_Occupations_Occurences_List
 
 end module Emp_Process

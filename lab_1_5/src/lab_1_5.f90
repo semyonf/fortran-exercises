@@ -2,20 +2,21 @@ program lab_1_5
    use Environment
    use Emp_IO
    use Emp_Process
+
    implicit none
 
-   character(*), parameter :: Input_file  = "../data/input.txt", Output_file = "output.txt"
-   type(employee), pointer :: Employee_List => null(), types => null()
-   integer                 :: occurrences(N_RECORDS) = 0
+   character(*), parameter   :: InputFile  = "../data/input.txt", OutputFile = "output.txt"
+   type(employee), pointer   :: EmployeeList => null()
+   type(occupation), pointer :: OccupationList => null()
 
-   Employee_List => Read_employee_list(Input_file)
+   EmployeeList => Read_Employee_List(InputFile)
 
-   if (Associated(Employee_List)) then
-      call Output_employee_list(Output_file, Employee_List, "rewind")
-      call ProcessPositions(Employee_List, types, occurrences)
-      call WritePositionsOccured(Output_file, types, occurrences)
+   allocate(OccupationList)
+
+   if (Associated(EmployeeList)) then
+      call Output_Employee_List(OutputFile, EmployeeList)
+      OccupationList => Process_Occupations_From(EmployeeList)
+      call Output_Occupation_List(OutputFile, OccupationList)
    endif
-
-   write(*,*) sizz
 
 end program lab_1_5
