@@ -113,7 +113,7 @@ contains
 
       integer                 :: Out, IO
       type(occupation)        :: OccupationList
-      character(*), parameter :: format = '(a,I2)'
+      character(*), parameter :: format = '(a,I3)'
 
       write (Out, format, iostat=IO) OccupationList%name, OccupationList%Occurrences
       call Handle_IO_status(IO, "writing occupation")

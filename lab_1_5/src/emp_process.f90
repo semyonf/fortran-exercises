@@ -39,20 +39,21 @@ contains
       character(L_OCCUPATION, kind=CH_) :: NextUniqueName
 
       if (.not. all(Repeated)) then
-
          Allocate(Unique_OccupationList)
 
          NextUniqueName             = Get_Next_Unique_Occupation_Name(OccupationList, Repeated, 1)
          Unique_OccupationList%Name = NextUniqueName
 
-         Duplicates  = Get_Duplicates_Of(OccupationList, NextUniqueName, 1, Repeated)
+         Allocate(NewRepeated(size(Repeated)))
+         NewRepeated = .false.
+
+         Duplicates  = Get_Duplicates_Of(OccupationList, NextUniqueName, 1, NewRepeated)
          Unique_OccupationList%Occurrences = count(Duplicates)
          NewRepeated = Repeated .or. Duplicates
 
          if (.not. all(NewRepeated)) then
             Unique_OccupationList%Next => Form_Unique_Occupations(OccupationList, NewRepeated)
          endif
-
       endif
    end function Form_Unique_Occupations
 
