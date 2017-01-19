@@ -6,7 +6,7 @@ module Emp_Process
 
 contains
 
-   ! Функция для вытягивания профессий и количества их вхождений из списка сотрудников
+   ! Функция для вытягивания профессий и их обработки
    pure function Process_Occupations_From(EmployeeList) result(OccupationList)
 
       intent(in) :: EmployeeList
@@ -27,8 +27,7 @@ contains
 
    end function Process_Occupations_From
 
-
-
+   ! Функция для формирования списка уникальных профессий с их количеством вхождений
    pure recursive function Form_Unique_Occupations(OccupationList, Repeated) result(Unique_OccupationList)
 
       intent(in) OccupationList, Repeated

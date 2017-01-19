@@ -68,7 +68,7 @@ contains
       integer        :: Out
 
       open (file=OutputFile, encoding=E_, Position="rewind", newunit=Out)
-         write(out, '(a)') 'Исходный список:'
+         write(out, '(a)') '---Исходный список:---'
          call Output_Employee(Out, EmployeeList)
       close (Out)
    end subroutine Output_Employee_List
@@ -100,8 +100,8 @@ contains
       type(occupation) :: OccupationList
       integer        :: Out
 
-      open (file=OutputFile, encoding=E_, Position="rewind", newunit=Out)
-         write(out, '(a)') 'Профессии:'
+      open (file=OutputFile, encoding=E_, Position="append", newunit=Out)
+         write(out, '(a)') '-----Профессии:-----'
          call Output_Occupation(Out, OccupationList)
       close (Out)
    end subroutine Output_Occupation_List
