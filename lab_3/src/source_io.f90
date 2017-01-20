@@ -3,11 +3,16 @@ module Source_IO
 
    implicit none
 
-   ! Структура данных для хранения строки
-   type TextLine
+   ! Костыль для создания массива указателей
+   type NextPtr
+      type(Text), pointer :: p => Null()
+   end type NextPtr
+
+   ! Структура данных для хранения текста
+   type Text
       character(:, CH_), allocatable :: Characters
-      type(TextLine), pointer        :: NormalNext => Null(), SortedNext => Null()
-   end type TextLine
+      type(NextPtr) :: Next(2)
+   end type Text
 
 contains
 
@@ -18,7 +23,7 @@ contains
 
       integer                 :: In
       character(*)            :: InputFile
-      type(TextLine), pointer :: List
+      type(Text), pointer :: List
 
       open (file=InputFile, encoding=E_, newunit=In)
          List => Read_Text_Line(In)
@@ -32,7 +37,7 @@ contains
 
       integer, parameter      :: max_len = 1024
       integer                 :: IO, In
-      type(TextLine), pointer :: Line
+      type(Text), pointer :: Line
       character(max_len, CH_) :: Characters
 
       ! Чтение символов во временный массив символов бОльшей длины
@@ -42,37 +47,46 @@ contains
          allocate(Line)
          ! Хранение в размещаемом поле массива символов без лишних пустых символов
          Line%Characters = Trim(Characters)
-         Line%NormalNext => Read_Text_Line(In)
+         Line%Next(1)%p => Read_Text_Line(In)
       else
          Line => Null()
       end if
    end function Read_Text_Line
 
    ! Вывод в файл
-   subroutine Output_Source_Code(OutputFile, List)
+   subroutine Output_To_File(OutputFile, List, Sorting)
 
-      intent(in) OutputFile, List
+      intent(in) :: OutputFile, List, Sorting
 
       character(*)   :: OutputFile
-      type(TextLine) :: List
+      type(Text) :: List
       integer        :: Out
+      logical        :: Sorting
 
       open (file=OutputFile, encoding=E_, newunit=Out)
-         call Output_Source_Line(Out, List)
+         write(Out,*) '-------START-------'
+         call Output_Line(Out, List, Sorting)
+         write(Out,*) '--------END--------'
       close (Out)
-   end subroutine Output_Source_Code
+   end subroutine Output_To_File
 
    ! Вывод строки исходного текста
-   recursive subroutine Output_Source_Line(Out, List)
+   recursive subroutine Output_Line(Out, List, Sorting)
 
-      intent(in) Out, List
+      intent(in) Out, List, Sorting
 
       integer        :: Out, IO
-      type(TextLine) :: List
+      type(Text) :: List
+      logical        :: Sorting
 
       write (Out, "(a)", iostat=IO) List%Characters
       call Handle_IO_Status(IO, "writing line to file")
-      if (Associated(List%NormalNext)) &
-         call Output_Source_Line(Out, List%NormalNext)
-   end subroutine Output_Source_Line
+      if (Sorting) then
+         if (Associated(List%Next(2)%p)) &
+            call Output_Line(Out, List%Next(2)%p, Sorting)
+      else
+         if (Associated(List%Next(1)%p)) &
+            call Output_Line(Out, List%Next(1)%p, Sorting)
+      endif
+   end subroutine Output_Line
 end module Source_IO

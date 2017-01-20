@@ -6,63 +6,120 @@ module Source_Process
 
 contains
 
-   ! Добавление направления с сортировкой к списку List
-   pure recursive function Add_Sorting_To(List) result(SortedList)
-      intent(in) List
+   ! test
+   pure subroutine Process(Original)
+      intent(inout) :: Original
 
-      type(TextLine)          :: List
-      type(TextLine), pointer :: SortedList
+      type(Text)           :: Original
+      integer, allocatable :: Lengths(:)
+      logical, allocatable :: NotChecked(:)
 
-      allocate(SortedList)
-      SortedList%Characters = List%Characters
-      if (Associated(List%NormalNext)) &
-         SortedList%NormalNext => Add_Sorting_To(List%NormalNext)
-   end function Add_Sorting_To
+      Lengths = Form_Lengths_Of(Original)
+      allocate(NotChecked(Size(Lengths)))
+      NotChecked = .true.
 
-   ! Подсчет элементов в списке
-   pure recursive function Count_Elements_In(List, Current) result(Size)
-      intent(in) List, Current
+   end subroutine Process
 
-      type(TextLine) :: List
-      integer        :: Current, Size
+   pure recursive subroutine Set_Pointer(Original, A, B)
+      intent(inout) Original
+      intent(in) A, B
 
-      Size = Current
-      if (Associated(List%NormalNext)) &
-         Size = Count_Elements_In(List%NormalNext, Current + 1)
-   end function Count_Elements_In
+      type(Text) :: Original
+      integer    :: A, B
 
-   ! Составление массива длин
-   pure function Form_Lengths_Of(List) result(Lengths)
-      intent(in) List
 
-      type(TextLine)          :: List
-      integer                 :: SizeOfList, i
-      integer, allocatable    :: Lengths(:)
 
-      SizeOfList = Count_Elements_In(List, 1)
-      allocate(Lengths(SizeOfList))
+   end subroutine Set_Pointer
 
-      do concurrent (i = 1:SizeOfList)
-         Lengths(i) = len(Get_Chars_At(i, List, 1), CH_)
-      end do
+   pure recursive subroutine Sort_Text(Original, Lengths, NotChecked)
+      intent(inout) Original, Lengths, NotChecked
 
+      type(Text)           :: Original
+      integer, allocatable :: Lengths(:)
+      logical, allocatable :: NotChecked(:)
+      integer              :: MinA, MinB
+
+      MinA = minloc(Lengths, dim=1, mask=NotChecked)
+      NotChecked(MinA) = .false.
+      MinB = minloc(Lengths, dim=1, mask=NotChecked)
+
+      call Set_Pointer(Original, MinA, MinB)
+
+      if (any(NotChecked)) then
+         call Sort_Text(Original, Lengths, NotChecked)
+      endif
+   end subroutine Sort_Text
+
+   ! Подсчет строк в тексте Original
+   ! РАБОТАЕТ
+   pure recursive subroutine Count_Elements_In(Original, Size)
+      intent(in) Original
+      intent(inout) Size
+
+      type(Text) :: Original
+      integer    :: Size
+
+      Size = Size + 1
+
+      if (Associated(Original%Next(1)%p)) &
+         call Count_Elements_In(Original%Next(1)%p, Size)
+   end subroutine Count_Elements_In
+
+   ! Составление массива длин строк текста Original
+   ! РАБОТАЕТ
+   pure function Form_Lengths_Of(Original) result(Lengths)
+      intent(in) Original
+
+      type(Text)           :: Original
+      integer              :: Size
+      integer, allocatable :: Lengths(:)
+
+      Size = 0
+      call Count_Elements_In(Original, Size)
+      allocate(Lengths(Size))
+
+      call Count_Lengths(Original, Lengths, Size)
    end function Form_Lengths_Of
 
-   ! Получение массива символов из строки Position списка List
-   pure recursive function Get_Chars_At(Position, List, Current) result(Chars)
-      intent(in) Position, List, Current
+   ! Подсчет длин строк в тексте Original
+   ! РАБОТАЕТ
+   pure recursive subroutine Count_Lengths(Original, Lengths, IterationsLeft)
+      intent(in) Original
+      intent(inout) IterationsLeft, Lengths
 
-      character(:, CH_), allocatable :: Chars
-      type(TextLine)                 :: List
-      integer                        :: Current, Position
+      type(Text)           :: Original
+      integer, allocatable :: Lengths(:)
+      integer              :: IterationsLeft
 
-      if (Current .eq. Position) then
-         Chars = List%Characters
-      else
-         if (Associated(List%NormalNext)) then
-            Chars = Get_Chars_At(Position, List%NormalNext, Current + 1)
-         endif
-      endif
-   end function Get_Chars_At
+      Lengths(1 + Size(Lengths) - IterationsLeft) = len(Original%Characters)
+
+      IterationsLeft = IterationsLeft - 1
+      if (IterationsLeft /= 0) &
+         call Count_Lengths(Original%Next(1)%p, Lengths, IterationsLeft)
+   end subroutine Count_Lengths
+
+   ! ! test
+   ! pure recursive subroutine Testing(Original)
+   !    intent(inout) :: Original
+
+   !    type(Text) :: Original
+
+   !    Original%Next(2)%p => Original%Next(1)%p
+
+   !    if (Associated(Original%Next(1)%p%Next(1)%p)) &
+   !       call Testing(Original%Next(1)%p)
+   ! end subroutine Testing
+
+
+   ! subroutine xxx(Original)
+   !    intent(inout) :: Original
+
+   !    type(Text) :: Original
+
+   !    Original%Characters = '123'
+   !    Original%Next(2)%p => Original%Next(1)%p%Next(1)%p
+
+   ! end subroutine xxx
+
 
 end module Source_process

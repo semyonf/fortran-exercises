@@ -6,7 +6,7 @@ program lab_3
    implicit none
 
    character(:), allocatable :: F1, F2, F3
-   type(TextLine), pointer   :: List => Null()
+   type(Text), pointer   :: Original => Null()
 
    ! Входной текстовый файл
    F1 = "../data/F1.txt"
@@ -15,14 +15,16 @@ program lab_3
    ! Текстовый файл в отсортированном порядке строк
    F3 = "F3.txt"
 
-   List => Read_Text(F1)
+   Original => Read_Text(F1)
 
-   write(*,*) Form_Lengths_Of(List)
-
-   if (Associated(List)) then
-      call Output_Source_Code(F2, List)
-      List => Add_Sorting_To(List)
-      call Output_Source_Code(F3, List)
+   if (Associated(Original)) then
+      call Output_To_File(F2, Original, .false.)
+      ! call Add_Sorting_To(Original, Sorted)
+      ! call Testing(Original)
+      write(*,*) Form_Lengths_Of(Original)
+      ! call xxx(Original)
+      ! call Output_To_File(F2, Original, .false.)
+      ! call Output_To_File(F3, Original, .true.)
    endif
 
 end program lab_3
