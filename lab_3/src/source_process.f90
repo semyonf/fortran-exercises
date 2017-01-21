@@ -20,6 +20,7 @@ contains
       call Add_Sorted_Ptrs(List, Lengths, Available, List)
    end subroutine Process
 
+   ! Сделать сортировку
    recursive subroutine Add_Sorted_Ptrs(List, Lengths, Available, Original)
       intent(inout) List, Available
       intent(in)    Lengths, Original
@@ -36,8 +37,8 @@ contains
          call Add_Sorted_Ptrs(List%Next(2)%p, Lengths, Available, Original)
    end subroutine Add_Sorted_Ptrs
 
-   ! Найти позицию следующего минимального элемента
-   subroutine Find_Next_Smallest_Location(Lengths, Available, Location)
+   ! Найти позицию по проядку следующего минимального элемента
+   recursive subroutine Find_Next_Smallest_Location(Lengths, Available, Location)
       intent(in)    Lengths
       intent(out)   Location
       intent(inout) Available
@@ -47,9 +48,16 @@ contains
       integer              :: Location
 
       Location = minloc(Lengths, dim=1, mask=Available)
+
+      if (Location == 1 .and. all(Available)) then
+         Available(Location) = .false.
+         call Find_Next_Smallest_Location(Lengths, Available, Location)
+      endif
+
       Available(Location) = .false.
    end subroutine Find_Next_Smallest_Location
 
+   ! Установить указатель к Н-ному элементу по порядку
    recursive subroutine Set_Ptr_To_Nth_Of(Ptr, Counter, List)
       intent(in)    List
       intent(out)   Ptr
@@ -65,7 +73,6 @@ contains
       else
          Ptr => List
       endif
-
    end subroutine Set_Ptr_To_Nth_Of
 
 ! ---------Формирование массива длин---------
@@ -88,7 +95,7 @@ contains
    pure function Form_Lengths_Of(List) result(Lengths)
       intent(in) List
 
-      type(LineStruct)           :: List
+      type(LineStruct)     :: List
       integer              :: Size
       integer, allocatable :: Lengths(:)
 

@@ -16,6 +16,11 @@ module Source_IO
 
 contains
 
+   ! ! Перемотка списка к минимальной строчке
+   ! subroutine Rewind_To_Shortest(List)
+
+   ! end subroutine Rewind_To_Shortest
+
    ! Чтение из файла
    function Read_LineStruct(InputFile) result (List)
 
@@ -62,6 +67,11 @@ contains
       type(LineStruct) :: List
       integer          :: Out
       logical          :: Sorting
+
+      if (Sorting) then
+         ! Перемотать к минимальной строчке
+         ! call Rewind_To_Shortest(List)
+      endif
 
       open (file=OutputFile, encoding=E_, newunit=Out)
          write(Out,*) '-------START-------'
