@@ -1,6 +1,6 @@
-!
-! В этом модуле располагаются общие процедуры и типы данных
-!
+ !
+ ! В этом модуле располагаются общие процедуры и типы данных
+ !
 
 module m_common
    use Environment
@@ -19,6 +19,29 @@ module m_common
    end type LineStruct
 
 contains
+
+   recursive subroutine DeleteFromMemory(List)
+      intent(inout) List
+
+      type(LineStruct), pointer :: List
+
+      if (Associated(List%Next(1)%p)) &
+         call DeleteFromMemory(List%Next(1)%p)
+      deallocate(List)
+   end subroutine DeleteFromMemory
+
+   ! Перемотка списка к минимальной строчке
+   function Rewind_To_Shortest(List) result (ShortestPtr)
+      intent(in) List
+
+      type(LineStruct), pointer :: List, ShortestPtr
+      integer                   :: Shortest
+
+      Shortest = minloc(Form_Lengths_Of(List), dim=1)
+
+      call Set_Ptr_To_Nth_Of(ShortestPtr, Shortest, List)
+
+   end function Rewind_To_Shortest
 
    ! Установить указатель Ptr к Counter элементу списка List
    recursive subroutine Set_Ptr_To_Nth_Of(Ptr, Counter, List)
