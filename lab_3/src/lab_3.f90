@@ -2,6 +2,7 @@ program lab_3
    use Environment
    use m_io
    use m_sorting
+   use m_common
 
    implicit none
 
@@ -21,6 +22,7 @@ program lab_3
       call Process(List)
       call Output_To_File(F2, List, .false.)
       call Output_To_File(F3, List, .true.)
+      call DeleteFromMemory(List)
    endif
 
 end program lab_3

@@ -6,19 +6,6 @@ module m_io
 
 contains
 
-   ! Перемотка списка к минимальной строчке
-   function Rewind_To_Shortest(List) result (ShortestPtr)
-      intent(in) List
-
-      type(LineStruct), pointer :: List, ShortestPtr
-      integer                   :: Shortest
-
-      Shortest = minloc(Form_Lengths_Of(List), dim=1)
-
-      call Set_Ptr_To_Nth_Of(ShortestPtr, Shortest, List)
-
-   end function Rewind_To_Shortest
-
    ! Чтение из файла
    function Read_LineStruct(InputFile) result (List)
       intent(in) InputFile
