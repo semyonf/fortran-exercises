@@ -16,14 +16,87 @@ module Source_IO
 
 contains
 
-   ! ! Перемотка списка к минимальной строчке
-   ! subroutine Rewind_To_Shortest(List)
 
-   ! end subroutine Rewind_To_Shortest
+   ! Установить указатель к Н-ному элементу по порядку
+   recursive subroutine Set_Ptr_To_Nth_Of(Ptr, Counter, List)
+      intent(in)    List
+      intent(out)   Ptr
+      intent(inout) Counter
+
+      type(LineStruct), pointer :: List
+      type(LineStruct), pointer :: Ptr
+      integer                   :: Counter
+
+      if (Counter /= 1) then
+         Counter = Counter - 1
+         call Set_Ptr_To_Nth_Of(Ptr, Counter, List%Next(1)%p)
+      else
+         Ptr => List
+      endif
+   end subroutine Set_Ptr_To_Nth_Of
+
+! ---------Формирование массива длин---------
+
+   ! Подсчет строк в тексте List
+   pure recursive subroutine Count_Elements_In(List, Size)
+      intent(in) List
+      intent(inout) Size
+
+      type(LineStruct) :: List
+      integer    :: Size
+
+      Size = Size + 1
+
+      if (Associated(List%Next(1)%p)) &
+         call Count_Elements_In(List%Next(1)%p, Size)
+   end subroutine Count_Elements_In
+
+   ! Составление массива длин строк текста List
+   pure function Form_Lengths_Of(List) result(Lengths)
+      intent(in) List
+
+      type(LineStruct)     :: List
+      integer              :: Size
+      integer, allocatable :: Lengths(:)
+
+      Size = 0
+      call Count_Elements_In(List, Size)
+      allocate(Lengths(Size))
+
+      call Count_Lengths(List, Lengths, Size)
+   end function Form_Lengths_Of
+
+   ! Подсчет длин строк в тексте List
+   pure recursive subroutine Count_Lengths(List, Lengths, IterationsLeft)
+      intent(in) List
+      intent(inout) IterationsLeft, Lengths
+
+      type(LineStruct)           :: List
+      integer, allocatable :: Lengths(:)
+      integer              :: IterationsLeft
+
+      Lengths(1 + Size(Lengths) - IterationsLeft) = len(List%Characters)
+
+      IterationsLeft = IterationsLeft - 1
+      if (IterationsLeft /= 0) &
+         call Count_Lengths(List%Next(1)%p, Lengths, IterationsLeft)
+   end subroutine Count_Lengths
+
+   ! Перемотка списка к минимальной строчке
+   function Rewind_To_Shortest(List) result (ShortestPtr)
+      intent(in) List
+
+      type(LineStruct), pointer :: List, ShortestPtr
+      integer                   :: Shortest
+
+      Shortest = minloc(Form_Lengths_Of(List), dim=1)
+
+      call Set_Ptr_To_Nth_Of(ShortestPtr, Shortest, List)
+
+   end function Rewind_To_Shortest
 
    ! Чтение из файла
    function Read_LineStruct(InputFile) result (List)
-
       intent(in) InputFile
 
       integer             :: In
@@ -37,7 +110,6 @@ contains
 
    ! Чтение строки
    recursive function Read_LineStruct_Line(In) result(Line)
-
       intent(in) In
 
       integer, parameter      :: max_len = 1024
@@ -60,17 +132,17 @@ contains
 
    ! Вывод в файл
    subroutine Output_To_File(OutputFile, List, Sorting)
+      intent(in) :: OutputFile, Sorting
+      intent(out) :: List
 
-      intent(in) :: OutputFile, List, Sorting
-
-      character(*)     :: OutputFile
-      type(LineStruct) :: List
-      integer          :: Out
-      logical          :: Sorting
+      character(*)              :: OutputFile
+      type(LineStruct), pointer :: List
+      integer                   :: Out
+      logical                   :: Sorting
 
       if (Sorting) then
          ! Перемотать к минимальной строчке
-         ! call Rewind_To_Shortest(List)
+         List => Rewind_To_Shortest(List)
       endif
 
       open (file=OutputFile, encoding=E_, newunit=Out)
@@ -82,7 +154,6 @@ contains
 
    ! Вывод строки исходного текста
    recursive subroutine Output_Line(Out, List, Sorting)
-
       intent(in) Out, List, Sorting
 
       integer    :: Out, IO
