@@ -1,6 +1,7 @@
-module Source_Process
+module m_sorting
    use Environment
-   use Source_IO
+   use m_common
+   use m_io
 
    implicit none
 
@@ -57,4 +58,4 @@ contains
       Available(Location) = .false.
    end subroutine Find_Next_Smallest_Location
 
-end module Source_process
+end module m_sorting
