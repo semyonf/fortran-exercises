@@ -5,39 +5,39 @@ module Source_IO
 
    ! Костыль для создания массива указателей
    type NextPtr
-      type(Text), pointer :: p => Null()
+      type(LineStruct), pointer :: p => Null()
    end type NextPtr
 
    ! Структура данных для хранения текста
-   type Text
+   type LineStruct
       character(:, CH_), allocatable :: Characters
-      type(NextPtr) :: Next(2)
-   end type Text
+      type(NextPtr)                  :: Next(2)
+   end type LineStruct
 
 contains
 
    ! Чтение из файла
-   function Read_Text(InputFile) result (List)
+   function Read_LineStruct(InputFile) result (List)
 
       intent(in) InputFile
 
-      integer                 :: In
-      character(*)            :: InputFile
-      type(Text), pointer :: List
+      integer             :: In
+      character(*)        :: InputFile
+      type(LineStruct), pointer :: List
 
       open (file=InputFile, encoding=E_, newunit=In)
-         List => Read_Text_Line(In)
+         List => Read_LineStruct_Line(In)
       close (In)
-   end function Read_Text
+   end function Read_LineStruct
 
    ! Чтение строки
-   recursive function Read_Text_Line(In) result(Line)
+   recursive function Read_LineStruct_Line(In) result(Line)
 
       intent(in) In
 
       integer, parameter      :: max_len = 1024
       integer                 :: IO, In
-      type(Text), pointer :: Line
+      type(LineStruct), pointer :: Line
       character(max_len, CH_) :: Characters
 
       ! Чтение символов во временный массив символов бОльшей длины
@@ -47,21 +47,21 @@ contains
          allocate(Line)
          ! Хранение в размещаемом поле массива символов без лишних пустых символов
          Line%Characters = Trim(Characters)
-         Line%Next(1)%p => Read_Text_Line(In)
+         Line%Next(1)%p => Read_LineStruct_Line(In)
       else
          Line => Null()
       end if
-   end function Read_Text_Line
+   end function Read_LineStruct_Line
 
    ! Вывод в файл
    subroutine Output_To_File(OutputFile, List, Sorting)
 
       intent(in) :: OutputFile, List, Sorting
 
-      character(*)   :: OutputFile
-      type(Text) :: List
-      integer        :: Out
-      logical        :: Sorting
+      character(*)     :: OutputFile
+      type(LineStruct) :: List
+      integer          :: Out
+      logical          :: Sorting
 
       open (file=OutputFile, encoding=E_, newunit=Out)
          write(Out,*) '-------START-------'
@@ -75,11 +75,12 @@ contains
 
       intent(in) Out, List, Sorting
 
-      integer        :: Out, IO
-      type(Text) :: List
-      logical        :: Sorting
+      integer    :: Out, IO
+      type(LineStruct) :: List
+      logical    :: Sorting
 
       write (Out, "(a)", iostat=IO) List%Characters
+
       call Handle_IO_Status(IO, "writing line to file")
       if (Sorting) then
          if (Associated(List%Next(2)%p)) &

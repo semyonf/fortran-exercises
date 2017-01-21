@@ -1,4 +1,11 @@
-Another string of length 27
-Yet another string of length 31
-String of length 19
-Yet another super long kinda string of length 48
+***
+**
+*****
+*******
+********
+***********
+*
+****
+*********
+******
+**********
