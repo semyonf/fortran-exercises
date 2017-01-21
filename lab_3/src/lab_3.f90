@@ -1,7 +1,7 @@
 program lab_3
    use Environment
-   use Source_IO
-   use Source_Process
+   use m_io
+   use m_sorting
 
    implicit none
 
