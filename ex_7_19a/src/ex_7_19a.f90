@@ -40,7 +40,7 @@ program ex_7_19a
 
     open (file=output_file, newunit=Out)
         write(Out, *) pos, 'positive elements found within the array, coordinates:'
-        write(Out, *) 'X, Y'
+        write(Out, *) 'X, Y coordinates'
         write(Out, '(I2,A1,I2)') (Indexes(i,1), ',' ,Indexes(i,2), i = 1, pos)
     close (In)
 
