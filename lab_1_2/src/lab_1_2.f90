@@ -14,7 +14,7 @@ program lab_1_2
    call WriteEmployeeList(output_file, names, positions)
 
    ! Поиск повторившихся профессий
-   call ProcessPositions(positions, types, occurrences)
+   call ProcessPositions(positions, types, occurrences, N_RECORDS)
 
    ! Вывод профессий и их вхождений
    call WritePositionsOccured(output_file, types, occurrences)
@@ -22,19 +22,21 @@ program lab_1_2
 contains
 
    ! Подпроцесс для поиска и подсчета повторений профессий
-   subroutine ProcessPositions(positions, types, occurrences)
+   pure subroutine ProcessPositions(positions, types, occurrences, size)
       implicit none
 
-      character(kind=CH_) positions(:,:), types(:,:)
-      integer occurrences(:,:)
-      intent(in)  positions
+      character(kind=CH_)  :: positions(:,:), types(:,:)
+      integer              :: occurrences(:,:), size
+      intent(in)  positions, size
       intent(out) types, occurrences
 
-      integer                          :: N_unique = 0, i = 0, duplicates = 0
-      logical                          :: repeated(N_RECORDS) = .false.
+      integer                          :: N_unique, i, duplicates
+      logical, allocatable             :: repeated(:)
       character(kind=CH_), allocatable :: newPositions(:,:)
 
       newPositions = positions
+      allocate(repeated(size))
+      repeated = .false.
 
       do while (.not. all(repeated))
          N_unique = N_unique + 1
