@@ -4,7 +4,7 @@ program ex_8_24
     implicit none
     integer, parameter      :: R_ = 4
     integer                 :: In = 0, Out = 0, N = 0, i = 0
-    real(R_)                :: x = .0, a = .0, b = .0, h = .0, sum = .0, integral = .0, t = .0
+    real(R_)                :: x, a, b, h, sum, integral, t
     character(*), parameter :: output_file = "output.txt", &
                                input_file = "../data/input.txt"
 
@@ -50,7 +50,7 @@ real function F(x)
     real, intent(in) :: x
 
     F = (q(x) ** 2 + 1.57) / sqrt(q(x) + 2.15)
-    
+
 end function F
 
 pure real function q(x)
