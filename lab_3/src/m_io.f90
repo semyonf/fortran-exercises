@@ -53,7 +53,7 @@ contains
 
       if (Sorting) then
          ! Перемотать к минимальной строчке
-         List => Rewind_To_Shortest(List)
+         call Rewind_To_Shortest(List)
       endif
 
       open (file=OutputFile, encoding=E_, newunit=Out)

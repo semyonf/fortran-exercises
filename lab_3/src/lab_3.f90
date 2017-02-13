@@ -7,7 +7,7 @@ program lab_3
    implicit none
 
    character(:), allocatable :: F1, F2, F3
-   type(LineStruct), pointer   :: List => Null()
+   type(LineStruct), pointer :: List => Null()
 
    ! Входной текстовый файл
    F1 = "../data/F1.txt"

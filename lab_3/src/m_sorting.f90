@@ -7,7 +7,7 @@ module m_sorting
 
 contains
 
-   subroutine Process(List)
+   pure subroutine Process(List)
       intent(inout) List
 
       type(LineStruct), pointer :: List
@@ -22,9 +22,9 @@ contains
    end subroutine Process
 
    ! Сделать сортировку
-   recursive subroutine Add_Sorted_Ptrs(List, Lengths, Available, Original)
+   pure recursive subroutine Add_Sorted_Ptrs(List, Lengths, Available, Original)
       intent(inout) List, Available
-      intent(in)    Lengths, Original
+      intent(in)    Lengths
 
       type(LineStruct), pointer :: List, Original
       integer                   :: Location
@@ -39,7 +39,7 @@ contains
    end subroutine Add_Sorted_Ptrs
 
    ! Найти позицию по проядку следующего минимального элемента
-   recursive subroutine Find_Next_Smallest_Location(Lengths, Available, Location)
+   pure recursive subroutine Find_Next_Smallest_Location(Lengths, Available, Location)
       intent(in)    Lengths
       intent(out)   Location
       intent(inout) Available

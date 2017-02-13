@@ -20,7 +20,8 @@ module m_common
 
 contains
 
-   recursive subroutine DeleteFromMemory(List)
+   ! Удалить List из памяти
+   pure recursive subroutine DeleteFromMemory(List)
       intent(inout) List
 
       type(LineStruct), pointer :: List
@@ -31,21 +32,18 @@ contains
    end subroutine DeleteFromMemory
 
    ! Перемотка списка к минимальной строчке
-   function Rewind_To_Shortest(List) result (ShortestPtr)
-      intent(in) List
-
-      type(LineStruct), pointer :: List, ShortestPtr
+   pure subroutine Rewind_To_Shortest(List)
+      type(LineStruct), pointer :: List
       integer                   :: Shortest
 
       Shortest = minloc(Form_Lengths_Of(List), dim=1)
 
-      call Set_Ptr_To_Nth_Of(ShortestPtr, Shortest, List)
+      call Set_Ptr_To_Nth_Of(List, Shortest, List)
 
-   end function Rewind_To_Shortest
+   end subroutine Rewind_To_Shortest
 
    ! Установить указатель Ptr к Counter элементу списка List
-   recursive subroutine Set_Ptr_To_Nth_Of(Ptr, Counter, List)
-      intent(in)    List
+   pure recursive subroutine Set_Ptr_To_Nth_Of(Ptr, Counter, List)
       intent(out)   Ptr
       intent(inout) Counter
 
